@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
 	"name": "definely",
 	"version": "0.0.1",
 	"description": "",
@@ -12,6 +13,21 @@
 		"url": "https://github.com/ritterim/definely"
 	},
 	"keywords": [
+=======
+  "name": "definely",
+  "version": "0.0.1",
+  "description": "",
+  "main": "gulp",
+  "scripts": {
+    "test": "gulp test",
+	"start": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ritterim/definely"
+  },
+  "keywords": [
+>>>>>>> Added some unit tests for siren.js
     "business",
     "dictionary",
     "definitions",
@@ -71,10 +87,10 @@
   },
   "devDependencies": {
     "node-inspector": "^0.8.3",
-    "mocha": "~2.1.0",
     "chai": "~1.10.0",
     "sinon": "~1.12.2",
-    "mocha-sinon": "~1.1.4"
+    "mocha-sinon": "~1.1.4",
+    "gulp-mocha": "~2.0.0"
   }
 }
->>>>>>> Rough implementation of siren. Tests to follow
+>>>>>>> Added some unit tests for siren.js

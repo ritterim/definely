@@ -1,5 +1,4 @@
 import {
-<<<<<<< HEAD
 	TypeError, NullError
 }
 from './Errors'
@@ -85,7 +84,6 @@ function Siren(resource) {
 		cls.push(type)
 		return cls
 	}
-    
 	// For now let rel = 'parentRel/currentType'
 	function rel(object, parentRel = '') {
 		if (object === null)
