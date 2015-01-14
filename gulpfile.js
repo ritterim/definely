@@ -24,6 +24,9 @@ gulp.task('clean', function () {
 })
 
 gulp.task('build', function () {
+    gulp.src('src/views/**')
+        .pipe(gulp.dest('build/views/'));
+
     return gulp.src('src/**/*.js')
         //        .pipe($.sourcemaps.init())
         .pipe($.traceur())
@@ -33,10 +36,10 @@ gulp.task('build', function () {
 })
 
 function serve(isDev) {
-    require('./build/app')
-    
+    require('./build/index')
+
     var debug = true //args.debug || args.debugBrk
-    
+
     if (debug) {
         var exec = require('child_process').exec
         exec('node-inspector')
