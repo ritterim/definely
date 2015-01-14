@@ -7,6 +7,14 @@ var $ = require('gulp-load-plugins')({
 
 gulp.task('default', ['serve-dev'])
 
+gulp.task('test', ['build'], function () {
+	return gulp.src('build/**/*Spec.js', {
+			read: false
+		})
+		.pipe($.mocha({
+			reporter: 'nyan'
+		}))
+})
 
 gulp.task('serve-dev', ['build'], function () {
     serve(true)
