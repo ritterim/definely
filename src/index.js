@@ -1,4 +1,5 @@
 import Hapi from 'hapi'
+import Path from 'path'
 import controllers from './controllers/index'
 import _ from './extensions'
 import Lazy from 'lazy.js'
@@ -36,6 +37,8 @@ server.start(() => {
 
 function outputRoutes() {
 	console.log('Available Routes:')
-	for (var route of server.table()[0].table)
-		console.log(route.method + ' ' + route.path)
+	Lazy(server.table()[0].table)
+	.map(route => route.method + ' ' + route.path)
+	.sort()
+	.each(e=>console.log(e))
 }
