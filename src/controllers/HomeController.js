@@ -1,14 +1,14 @@
 import Controller from './Controller'
 
-export default class DefinitionController extends Controller {
+export default class HomeController extends Controller {
 	constructor(router)
 	{
-		super(router, '/asdf')
+		super(router, '/definitions')
 		this.get('/', this.index)
 	}
 	
 	index(request, reply) {
-		reply.view('definitionList') 
+		reply.view('index')
 	}
 	
 }

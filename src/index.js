@@ -19,16 +19,6 @@ server.views({
 
 controllers(server)
 
-// Providing a VERY starter homepage.
-server.route({
-    method: 'GET',
-    path: '/',
-    handler: function (request, reply) {
-        reply.view('index');
-    }
-});
-
-
 server.start(() => {
 	console.log('Server running at:', server.info.uri)
 	outputRoutes()
