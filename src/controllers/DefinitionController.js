@@ -3,7 +3,7 @@ import Controller from './Controller'
 export default class DefinitionController extends Controller {
 	constructor(router)
 	{
-		super(router, '/asdf')
+		super(router, '/definitions')
 		this.get('/', this.index)
 	}
 	
