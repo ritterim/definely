@@ -1,4 +1,10 @@
 exports.up = function(pgm, run) {
+    pgm.createTable('terms',
+            {
+                id: { type: 'serial', primaryKey: true, notNull: true}, 
+                tags: { type: 'text'},
+                term: { type: 'varchar(100)', notNull: true}
+            });
     
     pgm.createTable('definitions', 
             {
@@ -7,13 +13,7 @@ exports.up = function(pgm, run) {
                 definition: { type: 'text', notNull: true}
             });
     
-    pgm.createTable('terms',
-            {
-                id: { type: 'serial', primaryKey: true, notNull: true}, 
-                tags: { type: 'text'},
-                term: { type: 'varchar(100)', notNull: true}
-            });
-  run();
+      run();
 };
 
 exports.down = false;
