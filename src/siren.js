@@ -1,4 +1,5 @@
 import {
+<<<<<<< HEAD
 	TypeError, NullError
 }
 from './Errors'
@@ -84,7 +85,7 @@ function Siren(resource) {
 		cls.push(type)
 		return cls
 	}
-
+    
 	// For now let rel = 'parentRel/currentType'
 	function rel(object, parentRel = '') {
 		if (object === null)
@@ -99,7 +100,6 @@ function Siren(resource) {
 	// takes all methods decorated with GET and exposes as links
 	function links(object) {
 		// siren spec: all links must have at least a rel 'self' linking to self unless it is a collection sub-entity
-
 		var links = []
 		links.push(link('self', 'todo: find url from GET annotation'))
 		for (var prop in object) {
