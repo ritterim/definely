@@ -1,11 +1,13 @@
 import {
-	TypeError, NullError
+    TypeError, NullError
 }
 from './Errors'
 
-import * as Lazy from 'lazy.js'
+import Lazy from 'lazy.js'
 
 export
+default
+
 function Siren(resource) {
 
 	this.root = root(resource)
