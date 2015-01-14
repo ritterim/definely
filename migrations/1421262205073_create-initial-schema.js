@@ -13,7 +13,7 @@ exports.up = function(pgm, run) {
                 definition: { type: 'text', notNull: true}
             });
     
-      run();
+    run();
 };
 
 exports.down = false;
