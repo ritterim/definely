@@ -1,26 +1,24 @@
 import {
-	InvalidArgumentError
+	TypeError, NullError
 }
-from './Exception'
-	
-import * as Lazy from 'lazy.js' 
-	
-export class Siren {
-	
-	constructor(resource) {
-		this.siren = root(object)
-		this.json = JSON.stringify(siren)
-	}
+from './Errors'
 
-	function root(object)
-	{
+import * as Lazy from 'lazy.js'
+
+export
+function Siren(resource) {
+
+	this.root = root(resource)
+	this.json = JSON.stringify(root)
+
+	function root(object) {
 		if (isArray(object))
 			return deepArray(object)
 		else if (isObject(object))
 			return entity(object)
-		throw new InvalidTypeError('object is not an array or an object') 
+		throw new TypeError('object is not an array or an object')
 	}
-	
+
 	function entity(object, parentProperty, parentRel) {
 		if (object === null)
 			throw new NullError('Object cannot be null')
@@ -29,16 +27,15 @@ export class Siren {
 			class: cls(object, parentProperty),
 			rel: rel(object, parentRel),
 			properties: properties(object),
-			entities: entities(object, this.rel)
+			entities: entities(object, rel)
 		}
 	}
 
 	// only call at root
-	function deepArray(objects)
-	{
-		Lazy(objects).map(o => entity(o))
+	function deepArray(objects) {
+		return Lazy(objects).map(o => entity(o)).toArray()
 	}
-	
+
 	// All non-root collections should only store an href and not its resolved constituents
 	function shallowArray(objects, parentProp, parentRel) {
 		if (!isArray(objects))
@@ -87,7 +84,7 @@ export class Siren {
 		cls.push(type)
 		return cls
 	}
-	
+
 	// For now let rel = 'parentRel/currentType'
 	function rel(object, parentRel = '') {
 		if (object === null)
@@ -102,45 +99,62 @@ export class Siren {
 	// takes all methods decorated with GET and exposes as links
 	function links(object) {
 		// siren spec: all links must have at least a rel 'self' linking to self unless it is a collection sub-entity
-		var link = (name, href) => ({rel:[name], href})
-		
+
 		var links = []
 		links.push(link('self', 'todo: find url from GET annotation'))
 		for (var prop in object) {
 			var value = object[prop]
-			if (isFunction(value)) // and is decorated with GET
-				links.push(link(prop, 'todo: find url from GET annotation'))
+			var annotation = {
+					method: 'GET',
+					url: 'url'
+				} // get annotation from method
+			if (isFunction(value) && annotation.method.match(/get/i))
+				links.push(link(prop, annotation))
 		}
-		
+
+		function link(name, annotation) {
+			return {
+				rel: [name],
+				href: annotation.url
+			}
+		}
+
 		return links
 	}
-	
+
 	// takes all methods decorated with POST and exposes as actions
 	function actions(object) {
 		var actions = [];
-		
+
 		for (var prop in object) {
 			var value = object[prop]
-			if (isFunction(value)) // and is decorated with POST/PUT/DELETE
+			var annotation = {
+					method: 'POST',
+					url: 'url'
+				} // get annotation from method
+			if (isFunction(value) && "post put delete patch".indexOf(annotation.method) != -1)
 				actions.push(action(value, prop, annotation))
 		}
-		
-		function action(value, prop, annotation)
-		{
+
+		function action(value, prop, annotation) {
 			return {
 				name: prop,
 				title: prop,
-				href: 'annotation.url', 
-				method: 'POST', // annotation.method
-				fields: Lazy(arguments).map(arg => ({name:arg, type:type(value), value})).toArray(),
+				href: annotation.url,
+				method: annotation.method,
+				fields: Lazy(arguments).map(arg => ({
+					name: arg,
+					type: type(value),
+					value
+				})).toArray(),
 			}
 		}
-		
+
 		return actions
 	}
 
 	function type(object) {
-		if (isArray(object)){
+		if (isArray(object)) {
 			if (object.length == 0)
 				return 'collection'
 			object = object[0]
@@ -149,19 +163,19 @@ export class Siren {
 	}
 
 	function isValue(object) {
-		return typeof(object) !== 'object' && !isFunction(object)
+		return typeof (object) !== 'object' && !isFunction(object)
 	}
 
 	function isArray(object) {
 		return Array.isArray(object)
 	}
-		
+
 	function isFunction(object) {
-		return typeof(object) == 'function'
+		return typeof (object) == 'function'
 	}
-		
+
 	function isObject(object) {
-		return typeof(object) == 'object'
+		return typeof (object) == 'object'
 	}
 
 }
