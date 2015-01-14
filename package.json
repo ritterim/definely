@@ -1,17 +1,17 @@
 {
-    "name": "definely",
-    "version": "0.0.1",
-    "description": "",
-    "main": "gulp",
-    "scripts": {
-        "test": "gulp test",
-        "start": "gulp"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ritterim/definely"
-    },
-    "keywords": [
+	"name": "definely",
+	"version": "0.0.1",
+	"description": "",
+	"main": "gulp",
+	"scripts": {
+		"test": "gulp test",
+		"start": "gulp"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ritterim/definely"
+	},
+	"keywords": [
     "business",
     "dictionary",
     "definitions",
@@ -48,4 +48,5 @@
         "sinon": "~1.12.2",
         "chai": "~1.10.0"
     }
+
 }
