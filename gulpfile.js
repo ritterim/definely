@@ -28,15 +28,14 @@ gulp.task('build', function () {
         .pipe(gulp.dest('build/views/'));
 
     return gulp.src('src/**/*.js')
-        //        .pipe($.sourcemaps.init())
+        .pipe($.sourcemaps.init())
         .pipe($.traceur())
-        //        .pipe($.concat('definely.js'))
-        //        .pipe($.sourcemaps.write('.'))
+        .pipe($.sourcemaps.write('.'))
         .pipe(gulp.dest('build'))
 })
 
 function serve(isDev) {
-    require('./build/index')
+    require('./build')
 
     var debug = true //args.debug || args.debugBrk
 
@@ -45,4 +44,3 @@ function serve(isDev) {
         exec('node-inspector')
     }
 }
-

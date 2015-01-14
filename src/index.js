@@ -1,9 +1,14 @@
-var Hapi = require('hapi');
-var Path = require('path');
-var server = new Hapi.Server();
+import Hapi from 'hapi'
+import Path from 'path'
+import controllers from './controllers/index'
+import _ from './extensions'
+import Lazy from 'lazy.js'
 
-// This should be set via config. at some point.
-server.connection({ port: 3000 });
+var server = new Hapi.Server()
+
+server.connection({
+	port: 3000
+})
 
 server.views({
     engines: {
@@ -12,16 +17,18 @@ server.views({
     path: Path.join(__dirname, './views')
 });
 
-// Providing a VERY starter homepage.
-server.route({
-    method: 'GET',
-    path: '/',
-    handler: function (request, reply) {
-        reply.view('index');
-    }
-});
+controllers(server)
 
-server.start(function () {
-    console.log('definely running at:', server.info.uri);
-});
+server.start(() => {
+	console.log('Server running at:', server.info.uri)
+	outputRoutes()
+})
 
+
+function outputRoutes() {
+	console.log('Available Routes:')
+	Lazy(server.table()[0].table)
+	.map(route => route.method + ' ' + route.path)
+	.sort()
+	.each(e=>console.log(e))
+}
