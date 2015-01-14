@@ -177,5 +177,4 @@ function Siren(resource) {
 	function isObject(object) {
 		return typeof (object) == 'object'
 	}
-
 }
