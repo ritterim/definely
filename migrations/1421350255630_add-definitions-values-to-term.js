@@ -3,7 +3,7 @@ exports.up = function(pgm, run) {
     pgm.sql("update terms set definition = 'Center for Medicare and Medicaid Services' where id = 2;");
     pgm.sql("update terms set definition = 'National Insurance Producer Registry' where id = 3;");
     pgm.sql("update terms set definition = 'National Producer Number' where id = 4;");
-    pgm.sql("update terms set definition = 'National Association of Insurance Commissioneres' where id = 5;");
+    pgm.sql("update terms set definition = 'National Association of Insurance Commissioners' where id = 5;");
     run();
 };
 
