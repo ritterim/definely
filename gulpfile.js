@@ -41,15 +41,6 @@ gulp.task('build', function () {
 })
 
 gulp.task('test', ['build'], function () {
-    return gulp.src('build/**/*Spec.js', {
-            read: false
-        })
-        .pipe($.mocha({
-            reporter: 'nyan'
-        }))
-})
-
-gulp.task('test', ['build'], function () {
 	return gulp.src('build/**/*Spec.js', {
 			read: false
 		})

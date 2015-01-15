@@ -1,37 +1,13 @@
-class Error {
-	constructor(error) {
-		this.error = error;
-	}
+export default function Errors() {}
 
-	get error() {
-		return this.constructor.name + ': ' + this._error
-	}
+Errors.invalidArg = format('invalid argument'),
+Errors.nullArg = format('null argument'),
+Errors.typeArg = expected('invalid argument type')
 
-	set error(value) {
-		this._error = value;
-	}
-
-	toString() {
-		return this.error;
-	}
+function expected(type) {
+    return (variable, expected, actual) => type + ': var "' + variable + '", expected:' + expected + (actual ? ', actual:' + actual : '')
 }
 
-class ArgumentError extends Error {
-	constructor(value) {
-		super(value)
-	}
-}
-
-
-export class TypeError extends Error {
-	constructor(value) {
-		super(value)
-	}
-}
-
-
-export class NullError extends Error {
-	constructor(value) {
-		super(value)
-	}
+function format(type) {
+    return variable => type + ': var ' + variable
 }

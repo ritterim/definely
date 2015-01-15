@@ -1,12 +1,10 @@
-import {
-    TypeError, NullError
-}
-from './Errors'
-
+import Errors from '../Errors'
 import Lazy from 'lazy.js'
 
-export default function Siren(resource) {
+export
+default
 
+function Siren(resource) {
     this.root = root(resource)
     this.json = JSON.stringify(root)
 
@@ -15,36 +13,21 @@ export default function Siren(resource) {
             return deepArray(object)
         else if (isObject(object))
             return entity(object)
-        throw new TypeError('object is not an array or an object')
+        throw Errors.typeArg('object', 'array|object')
     }
 
     function entity(object, parentProperty, parentRel) {
         if (object === null)
-            throw new NullError('Object cannot be null')
+            throw Errors.nullArg('object')
 
+        var relValue = rel(object, parentRel)
         return {
             class: cls(object, parentProperty),
-            rel: rel(object, parentRel),
+            rel: relValue,
             properties: properties(object),
-            entities: entities(object, rel)
-        }
-    }
-
-    // only call at root
-    function deepArray(objects) {
-        return Lazy(objects).map(o => entity(o)).toArray()
-    }
-
-    // All non-root collections should only store an href and not its resolved constituents
-    function shallowArray(objects, parentProp, parentRel) {
-        if (!isArray(objects))
-            throw new TypeError('objects are not an array.')
-
-        return {
-            class: cls(object, parentProperty),
-            rel: rel(object, parentRel),
-            href: 'todo: get url from property url annotation',
-            links: links(object)
+            entities: entities(object, relValue),
+            links: links(object),
+            actions: actions(object)
         }
     }
 
@@ -55,34 +38,53 @@ export default function Siren(resource) {
             if (!isValue(value)) {
                 if (isArray(value))
                     entities.push(shallowArray(value, prop, rel))
-                else if (isObject(value))
-                    entities.push(entity(value, prop, rel))
+                else if (isObject(value)) {
+                    if (value != null)
+                        entities.push(entity(value, prop, rel))
+                }
             }
         }
         return entities
     }
 
+    // only call at root
+    function deepArray(objects) {
+        return Lazy(objects).map(o => entity(o)).toArray()
+    }
+
+    // All non-root collections should only store an href and not its resolved constituents
+    function shallowArray(objects, parentProperty, parentRel) {
+        if (!isArray(objects))
+            throw Errors.typeArg('objects', 'array')
+        return {
+            class: cls(objects, parentProperty),
+            rel: rel(objects, parentRel),
+            href: 'todo: get url from property url annotation',
+        }
+    }
+
     function cls(object, parentProperty = '') {
         if (object === null)
-            throw new NullError('Object cannot be null')
-        var type = type(object)
+            throw Errors.nullArg('object')
+        var type = typeOf(object)
         parentProperty = parentProperty.trim()
         var cls = []
-        if (parentProperty && string.isString(parentProperty))
+        if (parentProperty && typeof (parentProperty) == 'string')
             cls.push(parentProperty)
         cls.push(type)
         return cls
     }
 
-    // For now let rel = 'parentRel/currentType'
-    function rel(object, parentRel = '') {
+    function rel(object, parentRel = null) {
         if (object === null)
-            throw new NullError('Object cannot be null')
-        parentRel = parentRel.trim()
-        var type = type(object)
-        if (parentRel === '')
-            return type
-        return parentRel + '/' + type
+            throw Errors.nullArg('object')
+        var type = typeOf(object)
+        var rel
+        if (!parentRel)
+            rel = type
+        else
+            rel = parentRel[0] + '.' + type
+        return [rel]
     }
 
     function properties(object) {
@@ -97,24 +99,23 @@ export default function Siren(resource) {
 
     // takes all methods decorated with GET and exposes as links
     function links(object) {
-        // siren spec: all links must have at least a rel 'self' linking to self unless it is a collection sub-entity
-
         var links = []
         links.push(link('self', 'todo: find url from GET annotation'))
         for (var prop in object) {
             var value = object[prop]
-            var annotation = {
-                    method: 'GET',
-                    url: 'url'
-                } // get annotation from method
-            if (isFunction(value) && annotation.method.match(/get/i))
-                links.push(link(prop, annotation))
+            if (isFunction(value))
+                console.log(prop + ' ' + value.annotations)
+            if (isFunction(value) && value.annotations && value.annotations.length > 0) {
+                var annotation = value.annotations[0]
+                if (typeof (annotation).match(/get/i))
+                    links.push(link(prop, annotation.url))
+            }
         }
 
-        function link(name, annotation) {
+        function link(name, href) {
             return {
                 rel: [name],
-                href: annotation.url
+                href
             }
         }
 
@@ -127,12 +128,12 @@ export default function Siren(resource) {
 
         for (var prop in object) {
             var value = object[prop]
-            var annotation = {
-                    method: 'POST',
-                    url: 'url'
-                } // get annotation from method
-            if (isFunction(value) && "post put delete patch".indexOf(annotation.method) != -1)
-                actions.push(action(value, prop, annotation))
+
+            if (isFunction(value) && value.annotations && value.annotations.length > 0) {
+                var annotation = value.annotations[0]
+                if (typeof (annotation).match(/post|put|delete|patch/i))
+                    actions.push(action(value, prop, annotation))
+            }
         }
 
         function action(value, prop, annotation) {
@@ -140,10 +141,10 @@ export default function Siren(resource) {
                 name: prop,
                 title: prop,
                 href: annotation.url,
-                method: annotation.method,
+                method: typeof (annotation).toUpperCase(),
                 fields: Lazy(arguments).map(arg => ({
                     name: arg,
-                    type: type(value),
+                    type: typeOf(value),
                     value
                 })).toArray(),
             }
@@ -152,13 +153,13 @@ export default function Siren(resource) {
         return actions
     }
 
-    function type(object) {
+    function typeOf(object) {
         if (isArray(object)) {
             if (object.length == 0)
-                return 'collection'
-            object = object[0]
+                return '[]'
+            return '[' + object[0].constructor.name + ']'
         }
-        return "test"//object.constructor.name
+        return object.constructor.name
     }
 
     function isValue(object) {
