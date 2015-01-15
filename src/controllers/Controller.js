@@ -40,6 +40,6 @@ export default class Controller {
     }
 
     url(relativeUrl) {
-        return this.baseUrl + ('/' + relativeUrl).trimBoth('/')
+        return (this.baseUrl + '/' + relativeUrl).normalize('/');
     }
 }
