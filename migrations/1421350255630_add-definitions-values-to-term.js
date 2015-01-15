@@ -8,7 +8,7 @@ exports.up = function(pgm, run) {
 };
 
 exports.down = function(pgm, run) {
-    pgm.sql("update terms set definition = '' where id in (1, 2, 3, 4, 5);");
+    pgm.sql("update terms set definition = null where id in (1, 2, 3, 4, 5);");
 
     run();
 };
