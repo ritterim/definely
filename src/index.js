@@ -20,8 +20,8 @@ function spawnServer(name, port, controllers, viewOptions) {
         port
     })
 
-    if (viewOptions)
-        server.views(views);
+	if (viewOptions)
+		server.views(viewOptions);
 
     controllers(server)
 
