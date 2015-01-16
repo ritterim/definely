@@ -9,7 +9,9 @@ spawnServer('App', 3000, controllers, {
     engines: {
         html: require('handlebars')
     },
-    path: Path.join(__dirname, './views')
+    path: Path.join(__dirname, './views'),
+    layoutPath: Path.join(__dirname, './views/layouts'),
+    layout: 'layout'
 })
 
 function spawnServer(name, port, controllers, viewOptions) {
