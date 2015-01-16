@@ -37,8 +37,7 @@ gulp.task('build', ['clean'], function () {
 
 	return gulp.src('src/**/*.js')
 		.pipe($.sourcemaps.init())
-		.pipe($.traceur({annotations:true}))
-		//        .pipe($.concat('definely.js'))
+		.pipe($.traceur({annotations:true, types:true, typeAssertions:true, typeAssertionModule:'../assert'}))
 		.pipe($.sourcemaps.write('.'))
 		.pipe(gulp.dest('build'))
 })
