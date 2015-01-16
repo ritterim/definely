@@ -1,4 +1,8 @@
 
+
+import {Get, Post} from '../Siren/Siren'
+
+@Get('terms/id')
 export default class Term {
     constructor() {}
     

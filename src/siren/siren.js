@@ -2,10 +2,13 @@ import Errors from '../Errors'
 import Lazy from 'lazy.js'
 import Path from 'path'
 
-export default function Siren(resource, baseUrl='') {
+export
+default
+
+function Siren(resource, baseUrl = '') {
     this.root = root(resource)
     this.json = JSON.stringify(this.root)
-    
+
     function root(object) {
         if (isArray(object))
             return deepArray(object)
@@ -103,15 +106,20 @@ export default function Siren(resource, baseUrl='') {
             var value = object[prop]
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
-                if (typeOf(annotation).match(/get/i))
-                    links.push(link(prop, annotation.url))
+                if (typeOf(annotation).match(/get/i)) {
+                    var link = {
+                        rel: [prop],
+                        href: fixUrl(annotation.url, object)
+                    }
+                    links.push(link)
+                }
             }
         }
 
-        function link(name, href) {
+        function link(name, href, object) {
             return {
                 rel: [name],
-                href: url(href)
+                href: fixUrl(href, object)
             }
         }
 
@@ -142,21 +150,19 @@ export default function Siren(resource, baseUrl='') {
 
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
-                if (typeOf(annotation).match(/post|put|delete|patch/i))
-                    actions.push(action(value, prop, annotation))
-            }
-        }
-
-        function action(func, prop, annotation) {
-            return {
-                name: prop,
-                title: prop,
-                href: url(annotation.url),
-                method: typeOf(annotation).toUpperCase(),
-                fields: args(func).map(arg => ({
-                    name: arg,
-                    type: typeOf(value)
-                }))
+                if (typeOf(annotation).match(/post|put|delete|patch/i)) {
+                    var action = {
+                        name: prop,
+                        title: prop,
+                        href: fixUrl(annotation.url, object),
+                        method: typeOf(annotation).toUpperCase(),
+                        fields: args(value).map(arg => ({
+                            name: arg,
+                            type: typeOf(value)
+                        }))
+                    }
+                    actions.push(action)
+                }
             }
         }
 
@@ -187,15 +193,19 @@ export default function Siren(resource, baseUrl='') {
     function isObject(object) {
         return (typeof object) == 'object'
     }
-    
+
     function args(func) {
         var match = func.toString().match(/function.*?\((.*?)\)/)[1]
         if (!match)
             return []
-        return match.split(',').map(e=>e.trim())
+        return match.split(',').map(e => e.trim())
     }
-    
-    function url(relativeUrl) {
+
+    function fixUrl(relativeUrl, object) {
+        // add any matching route parameters
+        //var parmPattern = /:(.*?)\/|\{(.*?)\}/ig
+        //var url = relativeUrl.replace(parmPattern)
+        // combine baseUrl
         return Path.join(baseUrl, relativeUrl).replace('\\', '/')
     }
 

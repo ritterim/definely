@@ -219,7 +219,7 @@ describe('siren:', () => {
             siren.root.entities[0].links[0].rel.should.deep.equal(['self'])
         })
 
-        it('selfLink.href will match any route attributes decorating the entity', () => {
+        it('selfLink.href will match first route attribute decorating the entity', () => {
             @Get('url')
             class Entity {}
             var entity = new Entity()
@@ -240,6 +240,28 @@ describe('siren:', () => {
             var siren3 = new Siren(entity3)
             siren3.root.entities[0].links[0].href.should.equal('url')
             siren3.root.entities[1].links[0].href.should.equal('url2')
+        })
+        
+        xit('selfLink.href supports parameters in the form path/:param', () => {
+            @Get('url/:id')
+            class Entity{
+                get id() { return id_ = id_ || 0}
+            }
+            var entity = new Entity()
+            entity.id = 5
+            var siren = new Siren(entity)
+            siren.root.links[0].href.should.equal('url/5')
+        })
+        
+        xit('selfLink.href supports parameters in the form path/:param', () => {
+            @Get('url/{id}')
+            class Entity{
+                get id() { return id_ = id_ || 0}
+            }
+            var entity = new Entity()
+            entity.id = 5
+            var siren = new Siren(entity)
+            siren.root.links[0].href.should.equal('url/5')
         })
         
         it('selfLink.href will assume the default form parentSelfLink.href/parentProperty if no custom attributes decorate the entity', () =>{
