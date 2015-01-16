@@ -8,12 +8,12 @@ var $ = require('gulp-load-plugins')({
 gulp.task('default', ['serve-dev'])
 
 gulp.task('test', ['build'], function () {
-	return gulp.src('build/**/*Spec.js', {
-			read: false
-		})
-		.pipe($.mocha({
-			reporter: 'nyan'
-		}))
+    return gulp.src('build/**/*Spec.js', {
+            read: false
+        })
+        .pipe($.mocha({
+            reporter: 'nyan'
+        }))
 })
 
 gulp.task('serve-dev', ['build'], function () {
@@ -31,19 +31,29 @@ gulp.task('clean', function () {
         .pipe($.clean())
 })
 
-gulp.task('build', function () {
-    gulp.src('src/views/**')
-        .pipe(gulp.dest('build/views/'));
+gulp.task('build', ['clean'], function () {
+	gulp.src('src/views/**')
+		.pipe(gulp.dest('build/views/'));
 
-    return gulp.src('src/**/*.js')
-        .pipe($.sourcemaps.init())
-        .pipe($.traceur())
-        .pipe($.sourcemaps.write('.'))
-        .pipe(gulp.dest('build'))
+	return gulp.src('src/**/*.js')
+		.pipe($.sourcemaps.init())
+		.pipe($.traceur({annotations:true}))
+		//        .pipe($.concat('definely.js'))
+		.pipe($.sourcemaps.write('.'))
+		.pipe(gulp.dest('build'))
+})
+
+gulp.task('test', ['build'], function () {
+	return gulp.src('build/**/*Spec.js', {
+			read: false
+		})
+		.pipe($.mocha({
+			reporter: 'nyan'
+		}))
 })
 
 function serve(isDev) {
-    require('./build')
+    require('./build/app')
 
     var debug = true //args.debug || args.debugBrk
 

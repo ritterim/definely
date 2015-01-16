@@ -1,4 +1,4 @@
-modeule.exports = config
+module.exports = config
 
 var config = {
 }
