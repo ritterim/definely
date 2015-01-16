@@ -16,7 +16,7 @@ function Siren(resource) {
         throw Errors.typeArg('object', 'array|object')
     }
 
-    function entity(object, parentProperty, parentRel) {
+    function entity(object, parentObject, parentProperty, parentRel) {
         if (object === null)
             throw Errors.nullArg('object')
 
@@ -26,7 +26,7 @@ function Siren(resource) {
             rel: relValue,
             properties: properties(object),
             entities: entities(object, relValue),
-            links: links(object),
+            links: links(object, parentObject, parentProperty),
             actions: actions(object)
         }
     }
@@ -37,10 +37,10 @@ function Siren(resource) {
             var value = object[prop]
             if (!isValue(value)) {
                 if (isArray(value))
-                    entities.push(shallowArray(value, prop, rel))
+                    entities.push(shallowArray(value, object, prop, rel))
                 else if (isObject(value)) {
                     if (value != null)
-                        entities.push(entity(value, prop, rel))
+                        entities.push(entity(value, object, prop, rel))
                 }
             }
         }
@@ -53,13 +53,13 @@ function Siren(resource) {
     }
 
     // All non-root collections should only store an href and not its resolved constituents
-    function shallowArray(objects, parentProperty, parentRel) {
+    function shallowArray(objects, parentObject, parentProperty, parentRel) {
         if (!isArray(objects))
             throw Errors.typeArg('objects', 'array')
         return {
             class: cls(objects, parentProperty),
             rel: rel(objects, parentRel),
-            href: 'todo: get url from property url annotation',
+            href: linkSelf(null, parentObject, parentProperty).href
         }
     }
 
@@ -98,12 +98,11 @@ function Siren(resource) {
     }
 
     // takes all methods decorated with GET and exposes as links
-    function links(object) {
+    function links(object, parent, parentProperty) {
         var links = []
-        links.push(link('self', 'todo: find url from GET annotation'))
+        links.push(linkSelf(object, parent, parentProperty))
         for (var prop in object) {
             var value = object[prop]
-            if (isFunction(value))
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
                 if (typeOf(annotation).match(/get/i))
@@ -121,7 +120,22 @@ function Siren(resource) {
         return links
     }
 
-    // takes all methods decorated with POST and exposes as actions
+    function linkSelf(object, parentObject, parentProperty) {
+        object = object || {}
+        var url
+        if (object.constructor.annotations) {
+            url = object.constructor.annotations[0].url
+        } else if (parentObject) {
+            var parentUrl = linkSelf(parentObject).href
+            url = parentUrl ? parentUrl + '/' + parentProperty : ''
+        }
+
+        return {
+            rel: ['self'],
+            href: url || ''
+        }
+    }
+
     function actions(object) {
         var actions = [];
 
@@ -135,17 +149,16 @@ function Siren(resource) {
             }
         }
 
-        function action(value, prop, annotation) {
+        function action(func, prop, annotation) {
             return {
                 name: prop,
                 title: prop,
                 href: annotation.url,
-                method: (typeof annotation).toUpperCase(),
-                fields: Lazy(arguments).map(arg => ({
+                method: typeOf(annotation).toUpperCase(),
+                fields: args(func).map(arg => ({
                     name: arg,
-                    type: typeOf(value),
-                    value
-                })).toArray(),
+                    type: typeOf(value)
+                }))
             }
         }
 
@@ -175,6 +188,13 @@ function Siren(resource) {
 
     function isObject(object) {
         return (typeof object) == 'object'
+    }
+    
+    function args(func) {
+        var match = func.toString().match(/function.*?\((.*?)\)/)[1]
+        if (!match)
+            return []
+        return match.split(',').map(e=>e.trim())
     }
 
 }
