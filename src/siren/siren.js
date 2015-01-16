@@ -6,7 +6,7 @@ default
 
 function Siren(resource) {
     this.root = root(resource)
-    this.json = JSON.stringify(root)
+    this.json = JSON.stringify(this.root)
 
     function root(object) {
         if (isArray(object))

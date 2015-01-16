@@ -372,4 +372,13 @@ describe('siren:', () => {
         })
     })
 
+    it('collection of entities should contain siren json for every entity', () => {
+        class Entity {}
+        class Entity2 {}
+        class Entity3 {}
+        class Entity4 {}
+        var siren = new Siren([new Entity(), new Entity2(), new Entity3(), new Entity4()])
+        siren.root.length.should.equal(4)
+    })
+
 })
