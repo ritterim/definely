@@ -1,13 +1,11 @@
 import Errors from '../Errors'
 import Lazy from 'lazy.js'
+import Path from 'path'
 
-export
-default
-
-function Siren(resource) {
+export default function Siren(resource, baseUrl='') {
     this.root = root(resource)
     this.json = JSON.stringify(this.root)
-
+    
     function root(object) {
         if (isArray(object))
             return deepArray(object)
@@ -113,7 +111,7 @@ function Siren(resource) {
         function link(name, href) {
             return {
                 rel: [name],
-                href
+                href: url(href)
             }
         }
 
@@ -153,7 +151,7 @@ function Siren(resource) {
             return {
                 name: prop,
                 title: prop,
-                href: annotation.url,
+                href: url(annotation.url),
                 method: typeOf(annotation).toUpperCase(),
                 fields: args(func).map(arg => ({
                     name: arg,
@@ -195,6 +193,10 @@ function Siren(resource) {
         if (!match)
             return []
         return match.split(',').map(e=>e.trim())
+    }
+    
+    function url(relativeUrl) {
+        return Path.join(baseUrl, relativeUrl).replace('\\', '/')
     }
 
 }
