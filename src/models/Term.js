@@ -4,7 +4,12 @@ import {Get, Post} from '../Siren/Siren'
 
 @Get('terms/id')
 export default class Term {
-    constructor() {}
+    constructor(id=0,term='',definition='',tags=[]) {
+        this.id = id
+        this.term = term
+        this.tags = tags
+        this.definition = definition
+    }
     
     get id() {return this.id_ = this.id_ || 0 }
     set id(value:number) { this.id_ = value }
@@ -17,4 +22,20 @@ export default class Term {
     
     get definition() { return this.definition_ = this.definition_ || ''}
     set definition(value:string) { this.definition_ = value}
+    
+    @Post('postUrl')
+    postMethod() {
+    }
+    
+    @Put('putUrl')
+    putMethod() {
+    }
+    
+    @Patch('patchUrl')
+    patchMethod() {
+    }
+    
+    @Delete('deleteUrl') 
+    deleteMethod() {
+    }
 }

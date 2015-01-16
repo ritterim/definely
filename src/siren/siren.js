@@ -2,10 +2,7 @@ import Errors from '../Errors'
 import Lazy from 'lazy.js'
 import Path from 'path'
 
-export
-default
-
-function Siren(resource, baseUrl = '') {
+export default function Siren(resource, baseUrl = '') {
     this.root = root(resource)
     this.json = JSON.stringify(this.root)
 
@@ -129,6 +126,8 @@ function Siren(resource, baseUrl = '') {
     function linkSelf(object, parentObject, parentProperty) {
         object = object || {}
         var url
+        console.log(object)
+        console.log(object.constructor.annotations)
         if (object.constructor.annotations) {
             url = object.constructor.annotations[0].url
         } else if (parentObject) {
