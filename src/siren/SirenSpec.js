@@ -231,12 +231,23 @@ describe('siren:', () => {
             }
             var entity = new Entity()
             var siren = new Siren(entity)
-            console.log(siren.root.links)
             siren.root.links[0].rel.should.deep.equal(['self'])
             siren.root.links[1].rel.should.deep.equal(['method'])
             siren.root.links[1].href.should.equal('url')
             siren.root.links[2].rel.should.deep.equal(['method2'])
             siren.root.links[2].href.should.equal('url2')
+        })
+    
+        it('entity auto linking by decorated methods only work if entity is created using class syntax (limitation due to annotation support from traceur)', () => {
+            function Entity() {
+                
+                this.method = function() {}
+            }
+            var entity = new Entity()
+            var siren = new Siren(entity)
+            console.log(siren.root.links)
+            siren.root.links[0].rel.should.deep.equal(['self'])
+            siren.root.links.length.should.equal(1)
         })
     })
     

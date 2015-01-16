@@ -31,13 +31,16 @@ gulp.task('clean', function () {
         .pipe($.clean())
 })
 
-gulp.task('build', function () {
-    return gulp.src('src/**/*.js')
-        .pipe($.sourcemaps.init())
-        .pipe($.traceur())
-        //        .pipe($.concat('definely.js'))
-        .pipe($.sourcemaps.write('.'))
-        .pipe(gulp.dest('build'))
+gulp.task('build', ['clean'], function () {
+	gulp.src('src/views/**')
+		.pipe(gulp.dest('build/views/'));
+
+	return gulp.src('src/**/*.js')
+		.pipe($.sourcemaps.init())
+		.pipe($.traceur({annotations:true}))
+		//        .pipe($.concat('definely.js'))
+		.pipe($.sourcemaps.write('.'))
+		.pipe(gulp.dest('build'))
 })
 
 gulp.task('test', ['build'], function () {

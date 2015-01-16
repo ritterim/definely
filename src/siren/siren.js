@@ -104,10 +104,9 @@ function Siren(resource) {
         for (var prop in object) {
             var value = object[prop]
             if (isFunction(value))
-                console.log(prop + ' ' + value.annotations)
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
-                if (typeof (annotation).match(/get/i))
+                if (typeOf(annotation).match(/get/i))
                     links.push(link(prop, annotation.url))
             }
         }
@@ -131,7 +130,7 @@ function Siren(resource) {
 
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
-                if (typeof (annotation).match(/post|put|delete|patch/i))
+                if (typeOf(annotation).match(/post|put|delete|patch/i))
                     actions.push(action(value, prop, annotation))
             }
         }
@@ -141,7 +140,7 @@ function Siren(resource) {
                 name: prop,
                 title: prop,
                 href: annotation.url,
-                method: typeof (annotation).toUpperCase(),
+                method: (typeof annotation).toUpperCase(),
                 fields: Lazy(arguments).map(arg => ({
                     name: arg,
                     type: typeOf(value),
@@ -163,7 +162,7 @@ function Siren(resource) {
     }
 
     function isValue(object) {
-        return typeof (object) !== 'object' && !isFunction(object)
+        return (typeof object) !== 'object' && !isFunction(object)
     }
 
     function isArray(object) {
@@ -171,11 +170,11 @@ function Siren(resource) {
     }
 
     function isFunction(object) {
-        return typeof (object) == 'function'
+        return (typeof object) == 'function'
     }
 
     function isObject(object) {
-        return typeof (object) == 'object'
+        return (typeof object) == 'object'
     }
 
 }
