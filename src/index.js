@@ -29,11 +29,11 @@ function spawnServer(name, port, controllers, viewOptions) {
 
     server.start(() => {
         console.log(name + ' server running at:', server.info.uri)
-        outputRoutes()
+        outputRoutes(server)
     })
 }
 
-function outputRoutes() {
+function outputRoutes(server) {
     console.log('Available Routes:')
     Lazy(server.table()[0].table)
         .map(route => route.method + ' ' + route.path)
