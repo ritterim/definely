@@ -5,48 +5,83 @@ export default class Database{
         this.client = new pg.Client(connectionUri);
     };
 
-    search(searchTerm, callback){
-        client.connect(function(err){
+    add(term, tags, definition, callback) {
+        var self = this;
+
+        this.client.connect(function(err) {
             if(err) {
                 return console.error('Could not connect to postgres', err);
             }
 
-            client.query("select id, term, definition, tags, document, ts_rank(document,to_tsquery(" + searchTerm + ")) from (select id, term, definition, tags, setweight(to_tsvector(coalesce(terms.term, '')), 'A') || setweight(to_tsvector(coalesce(terms.definition, '')), 'C') || setweight(to_tsvector(coalesce(terms.tags, '')), 'B') as document from terms) t_search where document @@ to_tsquery(" + searchTerm + ") order by ts_rank(document, to_tsquery(" + searchTerm + " )) desc;",
-                         function(err, result){
-                             if(err) {
-                                 return console.error('Error running query', err);
-                             }
-                             client.end();
-                             callback(result);
-                         });
-        });
-    };
-
-    add(tags, term, definition, callback){
-        client.connect(function(err){
-            if(err){
-                return console.error('Could not connect to postgres', err);
-            }
-            client.query("insert into terms (tags, term, definition) values(" + tags + "," + term + ", " + definition + " ); ", function(err, result){
-                if(err){
+            self.client.query('insert into terms (term, tags, definition) values ($1, $2, $3);', [ term, tags, definition ], function(err, result) {
+                if(err) {
                     return console.error('Error running query', err);
                 }
-                client.end();
+
+                self.client.end();
+
                 callback(result);
             });
         });
     };
 
-    update(id, tags, term, definition, callback){
-        client.connect(function(err){
-            if(err){
+    find(id, callback) {
+        var self = this;
+
+        this.client.connect(function(err) {
+            if(err) {
                 return console.error('Could not connect to postgres', err);
             }
-            client.query("update terms set tags = " + tags + ", term = " + term + ", definition = " + definition + " where id = " + id + ";",function(err, result){
-                if(err){
+
+            self.client.query('select id, term, tags, definition from terms where id = $1;', [ id ],
+                              function(err, result) {
+                                  if(err) {
+                                      return console.error('Error running query', err);
+                                  }
+
+                                  self.client.end();
+
+                                  callback(result);
+                              });
+        });
+    };
+
+    search(searchTerm, callback) {
+        var self = this;
+
+        this.client.connect(function(err) {
+            if(err) {
+                return console.error('Could not connect to postgres', err);
+            }
+
+            self.client.query('select id, term, tags from terms, to_tsquery($1) as query where weightedVector @@ query order by ts_rank_cd(weightedVector, query) desc;', [ searchTerm ],
+                              function(err, result) {
+                                  if(err) {
+                                      return console.error('Error running query', err);
+                                  }
+
+                                  self.client.end();
+
+                                  callback(result);
+                              });
+        });
+    };
+
+    update(id, term, tags, definition, callback) {
+        var self = this;
+
+        this.client.connect(function(err) {
+            if(err) {
+                return console.error('Could not connect to postgres', err);
+            }
+
+            self.client.query('update terms set term = $1, tags = $2, definition = $3 where id = $4;', [ term, tags, definition, id ], function(err, result) {
+                if(err) {
                     return console.error('Error running query', err);
                 }
-                client.end();
+
+                self.client.end();
+
                 callback(result);
             });
         });
