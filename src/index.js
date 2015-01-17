@@ -7,7 +7,7 @@ import Lazy from 'lazy.js'
 
 spawnServer('App', 3000, controllers, {
     engines: {
-        html: require('handlebars')
+        hbs: require('handlebars')
     },
     path: Path.join(__dirname, './views'),
     layoutPath: Path.join(__dirname, './views/layouts'),
