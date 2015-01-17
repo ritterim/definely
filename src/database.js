@@ -1,8 +1,8 @@
 import pg from 'pg';
 
 export default class Database{
-    constructor(){
-        this.client = new pg.Client(process.env['DATABASE_URL']);
+    constructor(connectionUri){
+        this.client = new pg.Client(connectionUri);
     };
 
     search(searchTerm, callback){
