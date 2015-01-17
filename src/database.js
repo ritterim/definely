@@ -3,9 +3,8 @@ export default class Database{
     constructor(){
         
     };
-    
+    var client = new pg.Client(process.env['DATABASE_URL']);
     search(searchTerm, callback){
-         var client = new pg.Client(process.env['DATABASE_URL']);
          client.connect(function(err){
             if(err) {
                 return console.error('Could not connect to postgres', err);
@@ -20,6 +19,36 @@ export default class Database{
                     callback(result);
              });
          });
-    }
+    };
+    
+    add(tags, term, definition, callback){
+        client.connect(function(err){
+            if(err){
+                return console.error('Could not connect to postgres', err);
+            }
+            client.query("insert into terms (tags, term, definition) values(" + tags + "," + term + ", " + definition + " ); ", function(err, result){
+                if(err){
+                    return console.error('Error running query', err);
+                }
+                client.end();
+                callback(result);
+            });
+        });
+    };
+    
+    update(id, tags, term, definition, callback){
+        client.connect(function(err){
+            if(err){
+                return console.error('Could not connect to postgres', err);
+            }
+            client.query("update terms set tags = " + tags + ", term = " + term + ", definition = " + definition + " where id = " + id + ";",function(err, result){
+                if(err){
+                    return console.error('Error running query', err);
+                }
+                client.end();
+                callback(result);
+            });
+        });
+    };
     
 }
