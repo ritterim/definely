@@ -213,120 +213,8 @@ describe('siren:', () => {
     })
 
     describe('links:', () => {
-        it('entity contains a self link', () => {
-            function Entity() {}
-            var entity = new Entity()
-            var siren = new Siren(entity)
-            siren.root.links.length.should.equal(1)
-            siren.root.links[0].rel.should.deep.equal(['self'])
-        })
-
-        it('subentity contains a self link', () => {
-            function Entity() {
-                this.subEntity = new SubEntity()
-            }
-
-            function SubEntity() {}
-            var entity = new Entity()
-            var siren = new Siren(entity)
-            siren.root.entities[0].links.length.should.equal(1)
-            siren.root.entities[0].links[0].rel.should.deep.equal(['self'])
-        })
-
-        it('selfLink.href will match first route attribute decorating the entity', () => {
-            @Get('url')
-            class Entity {}
-            var entity = new Entity()
-            var siren = new Siren(entity)
-            siren.root.links[0].href.should.equal('url')
-
-            @Get('url2')
-            function Entity2() {}
-            var entity2 = new Entity2()
-            var siren2 = new Siren(entity2)
-            siren2.root.links[0].href.should.equal('url2')
-            
-            class Entity3 { 
-                get entity() {return new Entity()}
-                get entity2() {return new Entity2()}
-            }
-            var entity3 = new Entity3()
-            var siren3 = new Siren(entity3)
-            siren3.root.entities[0].links[0].href.should.equal('url')
-            siren3.root.entities[1].links[0].href.should.equal('url2')
-        })
         
-        xit('selfLink.href supports parameters in the form path/:param', () => {
-            @Get('url/:id')
-            class Entity{
-                get id() { return id_ = id_ || 0}
-            }
-            var entity = new Entity()
-            entity.id = 5
-            var siren = new Siren(entity)
-            siren.root.links[0].href.should.equal('url/5')
-        })
-        
-        xit('selfLink.href supports parameters in the form path/:param', () => {
-            @Get('url/{id}')
-            class Entity{
-                get id() { return id_ = id_ || 0}
-            }
-            var entity = new Entity()
-            entity.id = 5
-            var siren = new Siren(entity)
-            siren.root.links[0].href.should.equal('url/5')
-        })
-        
-        it('selfLink.href will assume the default form parentSelfLink.href/parentProperty if no custom attributes decorate the entity', () =>{
-            @Get('url')
-            class Entity {
-                get subEntity() {return new SubEntity()}
-            }
-           class SubEntity {}
-            var entity = new Entity()
-            var siren = new Siren(entity)
-            siren.root.entities[0].links[0].href.should.equal('url/subEntity')
-            
-            @Get('url2')
-            function Entity2() {
-                this.subEntity = new SubEntity2() 
-            }
-            function SubEntity2() {}
-            var entity2 = new Entity2()
-            var siren2 = new Siren(entity2)
-            siren2.root.entities[0].links[0].href.should.equal('url2/subEntity')
-        })
-        
-        it('selfLink.href will be the empty string if no custom attribute decorates entity and default form applies but parentSelfLink is also the empty string', () => {
-           class Entity {}
-           var entity = new Entity()
-           var siren = new Siren(entity)
-           siren.root.links[0].href.should.equal('')
-           
-           class Entity2 {
-               get entity() { return new Entity() }
-           }
-           var entity2 = new Entity2()
-           var siren2 = new Siren(entity2)
-           siren2.root.entities[0].links[0].href.should.equal('')
-        })
-
-        it('subentity collection contains a self link in the form of simply href instead of {rel:[self],href:}', () => {
-            @Get('url')
-            function Entity() {
-                this.subEntity = [new SubEntity()]
-            }
-
-            function SubEntity() {}
-            var entity = new Entity()
-            var siren = new Siren(entity)
-            siren.root.entities[0].hasOwnProperty('links').should.be.false
-            siren.root.entities[0].hasOwnProperty('href').should.be.true
-            siren.root.entities[0].href.should.equal('url/subEntity')
-        })
-
-        it('entity contains links for every method decorated with Get attribute', () => {
+        it('generated for every method decorated with Get attribute', () => {
             class Entity {
                 @Get('url')
                 method() {}
@@ -343,7 +231,7 @@ describe('siren:', () => {
             siren.root.links[2].href.should.equal('url2')
         })
 
-        it('entity auto linking by decorated methods only works if entity is created using class syntax (limitation due to annotation support from traceur)', () => {
+        it('ignored if the entity was created using function instead of class syntax (limitation due to annotation support from traceur)', () => {
             function Entity() {
                 @Get('url')
                 this.method = function () {}
@@ -366,6 +254,122 @@ describe('siren:', () => {
            var siren = new Siren(entity)
            siren.root.links[0].rel.should.deep.equal(['self'])
             siren.root.links.length.should.equal(1)
+        })
+        
+        describe('self link:', () => {
+            
+            it('entity contains a self link', () => {
+                function Entity() {}
+                var entity = new Entity()
+                var siren = new Siren(entity)
+                siren.root.links.length.should.equal(1)
+                siren.root.links[0].rel.should.deep.equal(['self'])
+            })
+
+            it('subentity contains a self link', () => {
+                function Entity() {
+                    this.subEntity = new SubEntity()
+                }
+
+                function SubEntity() {}
+                var entity = new Entity()
+                var siren = new Siren(entity)
+                siren.root.entities[0].links.length.should.equal(1)
+                siren.root.entities[0].links[0].rel.should.deep.equal(['self'])
+            })
+
+            it('selfLink.href will match first route attribute decorating the entity', () => {
+                @Get('url')
+                class Entity {}
+                var entity = new Entity()
+                var siren = new Siren(entity)
+                siren.root.links[0].href.should.equal('url')
+
+                @Get('url2')
+                function Entity2() {}
+                var entity2 = new Entity2()
+                var siren2 = new Siren(entity2)
+                siren2.root.links[0].href.should.equal('url2')
+
+                class Entity3 { 
+                    get entity() {return new Entity()}
+                    get entity2() {return new Entity2()}
+                }
+                var entity3 = new Entity3()
+                var siren3 = new Siren(entity3)
+                siren3.root.entities[0].links[0].href.should.equal('url')
+                siren3.root.entities[1].links[0].href.should.equal('url2')
+            })
+
+            xit('selfLink.href supports parameters in the form path/:param', () => {
+                @Get('url/:id')
+                class Entity{
+                    get id() { return id_ = id_ || 0}
+                }
+                var entity = new Entity()
+                entity.id = 5
+                var siren = new Siren(entity)
+                siren.root.links[0].href.should.equal('url/5')
+            })
+
+            xit('selfLink.href supports parameters in the form path/:param', () => {
+                @Get('url/{id}')
+                class Entity{
+                    get id() { return id_ = id_ || 0}
+                }
+                var entity = new Entity()
+                entity.id = 5
+                var siren = new Siren(entity)
+                siren.root.links[0].href.should.equal('url/5')
+            })
+
+            it('selfLink.href will assume the default form parentSelfLink.href/parentProperty if no custom attributes decorate the entity', () =>{
+                @Get('url')
+                class Entity {
+                    get subEntity() {return new SubEntity()}
+                }
+               class SubEntity {}
+                var entity = new Entity()
+                var siren = new Siren(entity)
+                siren.root.entities[0].links[0].href.should.equal('url/subEntity')
+
+                @Get('url2')
+                function Entity2() {
+                    this.subEntity = new SubEntity2() 
+                }
+                function SubEntity2() {}
+                var entity2 = new Entity2()
+                var siren2 = new Siren(entity2)
+                siren2.root.entities[0].links[0].href.should.equal('url2/subEntity')
+            })
+
+            it('selfLink.href will be the empty string if no custom attribute decorates entity and default form applies but parentSelfLink is also the empty string', () => {
+               class Entity {}
+               var entity = new Entity()
+               var siren = new Siren(entity)
+               siren.root.links[0].href.should.equal('')
+
+               class Entity2 {
+                   get entity() { return new Entity() }
+               }
+               var entity2 = new Entity2()
+               var siren2 = new Siren(entity2)
+               siren2.root.entities[0].links[0].href.should.equal('')
+            })
+
+            it('subentity collection contains a self link in the form of simply href instead of {rel:[self],href:}', () => {
+                @Get('url')
+                function Entity() {
+                    this.subEntity = [new SubEntity()]
+                }
+
+                function SubEntity() {}
+                var entity = new Entity()
+                var siren = new Siren(entity)
+                siren.root.entities[0].hasOwnProperty('links').should.be.false
+                siren.root.entities[0].hasOwnProperty('href').should.be.true
+                siren.root.entities[0].href.should.equal('url/subEntity')
+            })
         })
     })
     
