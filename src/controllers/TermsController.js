@@ -41,6 +41,7 @@ export default class TermsController extends Controller {
 
         this.database.search(searchTerm, function(dbResponse) {
             reply.view('terms/index', {
+                searchTerm: searchTerm,
                 title: title,
                 terms: dbResponse.rows
             });

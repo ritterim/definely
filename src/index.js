@@ -3,13 +3,18 @@ import Path from 'path'
 import controllers from './controllers/index'
 import _ from './extensions'
 import Lazy from 'lazy.js'
+import Handlebars from 'handlebars';
 
+Handlebars.registerHelper("currentYear", function() {
+    return new Date().getFullYear();
+});
 
 spawnServer('App', 3000, controllers, {
     engines: {
-        hbs: require('handlebars')
+        hbs: Handlebars
     },
     path: Path.join(__dirname, './views'),
+    partialsPath: Path.join(__dirname, './views/partials'),
     layoutPath: Path.join(__dirname, './views/layouts'),
     layout: 'layout'
 })
