@@ -2,8 +2,9 @@
 
 import {Get, Post, Put, Patch, Delete} from '../siren/Siren'
 
+    
 @Get('terms/id')
-export default class Term {
+export default class {
     constructor(id=0,term='',definition='',tags=[]) {
         this.id = id
         this.term = term

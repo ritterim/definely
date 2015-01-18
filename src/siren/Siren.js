@@ -4,6 +4,7 @@ import Path from 'path'
 
 export
 default
+
 function Siren(resource, baseUrl = '') {
     this.root = root(resource)
     this.json = JSON.stringify(this.root)
@@ -38,7 +39,9 @@ function Siren(resource, baseUrl = '') {
     function entities(object, rel) {
         var entities = []
 
-        publicMembers(object).each(({value, prop}) => {
+        publicMembers(object).each(({
+            value, prop
+        }) => {
             if (!isValue(value)) {
                 if (isArray(value))
                     entities.push(shallowArray(value, object, prop, rel))
@@ -95,8 +98,10 @@ function Siren(resource, baseUrl = '') {
 
     function properties(object) {
         var props = {}
-        
-        publicMembers(object).each(({value, prop}) => {
+
+        publicMembers(object).each(({
+            value, prop
+        }) => {
             if (isValue(value))
                 props[prop] = value
         })
@@ -108,8 +113,10 @@ function Siren(resource, baseUrl = '') {
     function links(object, parent, parentProperty) {
         var links = []
         links.push(linkSelf(object, parent, parentProperty))
-        
-        publicMembers(object).each(({value, prop}) => {
+
+        publicMembers(object).each(({
+            value, prop
+        }) => {
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
                 if (typeOf(annotation).match(/get/i)) {
@@ -135,15 +142,20 @@ function Siren(resource, baseUrl = '') {
     function linkSelf(object, parentObject, parentProperty) {
         object = object || {}
         var url
-        console.log(object)
-        console.log(object.constructor.annotations)
-        if (object.constructor.annotations) {
-            url = object.constructor.annotations[0].url
-        } else if (parentObject) {
-            var parentUrl = linkSelf(parentObject).href
-            url = parentUrl ? parentUrl + '/' + parentProperty : ''
-        }
+        console.log(JSON.stringify(object))
+        if (object.annotations)
+            console.log(object.annotations)
 
+//        try {
+            if (object.constructor && object.constructor.annotations) {
+                url = object.constructor.annotations[0].url
+            } else if (parentObject) {
+                var parentUrl = linkSelf(parentObject).href
+                console.log(parentUrl)
+                url = parentUrl ? parentUrl + '/' + parentProperty : ''
+            }
+//        } catch (error) {}
+            
         return {
             rel: ['self'],
             href: url || ''
@@ -153,7 +165,9 @@ function Siren(resource, baseUrl = '') {
     function actions(object) {
         var actions = [];
 
-        publicMembers(object).each(({value, prop}) => {
+        publicMembers(object).each(({
+            value, prop
+        }) => {
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
                 if (typeOf(annotation).match(/post|put|delete|patch/i)) {
@@ -220,7 +234,10 @@ function Siren(resource, baseUrl = '') {
         var members = []
         for (var prop in object) {
             if (!prop.match(/^_|_$/))
-                members.push({prop:prop, value:object[prop]})
+                members.push({
+                    prop: prop,
+                    value: object[prop]
+                })
         }
         return Lazy(members)
     }
