@@ -3,7 +3,16 @@
     <table class="table table-striped table-bordered">
         <tbody>
             {{#each terms}}
-            <tr><td><a href="/terms/{{this.id}}">{{this.term}}</a></td></tr>
+            <tr>
+                <td>
+                    <a href="/terms/{{this.id}}">{{this.term}}</a>
+
+                    <a href="/terms/{{this.id}}/edit" title="Edit">
+                        <i class="glyphicon glyphicon-edit pull-right"></i>
+                    </a>
+                    <div class="clearfix"></div>
+                </td>
+            </tr>
             {{else}}
             <tr><td>No results found</td></tr>
             {{/each}}

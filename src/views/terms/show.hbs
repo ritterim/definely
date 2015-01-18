@@ -1,5 +1,11 @@
 <div class="container">
-    <h3>What is <kbd>{{term.term}}</kbd>?</h3>
+    <h3>What is <kbd>{{term.term}}</kbd>?
+        <small>
+            <a href="/terms/{{term.id}}/edit" title="Edit">
+                <i class="glyphicon glyphicon-edit"></i>
+            </a>
+        </small>
+    </h3>
     <blockquote>
         <p>{{{term.definition}}}</p>
     </blockquote>
