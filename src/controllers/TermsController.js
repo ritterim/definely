@@ -40,28 +40,33 @@ export default class TermsController extends Controller {
         var title = searchTerm == null ? 'Terms' : 'Search results for: ' + searchTerm;
 
         this.database.search(searchTerm, function(dbResponse) {
-            for (var i = 0; i < dbResponse.rows.length; i++) {
-                var rank = dbResponse.rows[i].rank;
-                var rankClass = 'text-danger';
-
-                if (rank >= 0.8) {
-                    rankClass ='text-success';
-                }
-                else if (rank >= 0.5) {
-                    rankClass = 'text-warning';
-                }
-                else if (rank >= 0.1) {
-                    rankClass = 'text-info';
-                }
-
-                dbResponse.rows[i].rankClass = rankClass;
+            if (dbResponse.rows.length === 1) {
+                reply.redirect('/terms/' + dbResponse.rows[0].id);
             }
+            else {
+                for (var i = 0; i < dbResponse.rows.length; i++) {
+                    var rank = dbResponse.rows[i].rank;
+                    var rankClass = 'text-danger';
 
-            reply.view('terms/index', {
-                searchTerm: searchTerm,
-                title: title,
-                terms: dbResponse.rows
-            });
+                    if (rank >= 0.8) {
+                        rankClass ='text-success';
+                    }
+                    else if (rank >= 0.5) {
+                        rankClass = 'text-warning';
+                    }
+                    else if (rank >= 0.1) {
+                        rankClass = 'text-info';
+                    }
+
+                    dbResponse.rows[i].rankClass = rankClass;
+                }
+
+                reply.view('terms/index', {
+                    searchTerm: searchTerm,
+                    title: title,
+                    terms: dbResponse.rows
+                });
+            }
         });
     }
 
