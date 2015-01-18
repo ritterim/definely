@@ -51,7 +51,9 @@ export default class Database{
                 done(client);
             }
 
-            client.query('select id, term, tags from terms, to_tsquery($1) as query where weightedVector @@ query order by ts_rank_cd(weightedVector, query) desc;', [ searchTerm ],
+            searchTerm = searchTerm.replace(/\s+/g, ' | ');
+
+            client.query('select id, term, tags, rank from terms, to_tsquery($1) as query, ts_rank_cd(weightedVector, query) as rank where weightedVector @@ query order by rank desc;', [ searchTerm ],
                               function(err, result) {
                                   if(err) {
                                       return console.error('Error running query', err);
