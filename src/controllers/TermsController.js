@@ -50,7 +50,8 @@ export default class TermsController extends Controller {
 
     new(request, reply) {
         reply.view('terms/new', {
-            title: 'New term'
+            title: 'New term',
+            term: request.query.term
         });
     }
 
