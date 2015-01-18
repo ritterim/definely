@@ -25,6 +25,16 @@ function spawnServer(name, port, controllers, viewOptions) {
 	if (viewOptions)
 		server.views(viewOptions);
 
+    server.ext('onRequest', function (request, reply) {
+        var methodOverride = request.query['hapi_method'];
+
+        if (methodOverride) {
+            request.setMethod(methodOverride);
+        }
+
+        return reply.continue();
+    });
+
     controllers(server)
 
     server.start(() => {
