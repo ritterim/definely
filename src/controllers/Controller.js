@@ -21,7 +21,7 @@ export default class Controller {
     }
 
     put(relativeUrl, handler, name = null) {
-        this.route('PUT', name, this.url(relativeUrl), handler)
+        this.route('PUT', this.url(relativeUrl), handler)
     }
 
     route(method, path, handler, name = null) {
