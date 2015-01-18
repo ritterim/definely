@@ -2,12 +2,13 @@ import Controller from './Controller'
 import pg from 'pg'
 import Database from '../database'
 
-export default class TermController extends Controller {
+export default class TermsController extends Controller {
     constructor(router) {
         super(router, '/terms');
 
         this.get('/', this.index.bind(this));
-        this.get('{id}', this.edit.bind(this));
+        this.get('/{id}', this.show.bind(this));
+        this.get('/{id}/edit', this.edit.bind(this));
         this.get('/new', this.new);
         this.post('/new', this.create.bind(this));
         this.put('/{id}', this.update.bind(this));
@@ -49,6 +50,15 @@ export default class TermController extends Controller {
     new(request, reply) {
         reply.view('terms/new', {
             title: 'New term'
+        });
+    }
+
+    show(request, reply) {
+        this.database.find(request.params.id, function(term) {
+            reply.view('terms/show', {
+                title: 'Show term',
+                term: term
+            });
         });
     }
 
