@@ -1,6 +1,6 @@
 
 
-import {Get, Post} from '../siren/Siren'
+import {Get, Post, Put, Patch, Delete} from '../siren/Siren'
 
 @Get('terms/id')
 export default class Term {

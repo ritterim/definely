@@ -2,9 +2,15 @@ import Errors from '../Errors'
 import Lazy from 'lazy.js'
 import Path from 'path'
 
-export default function Siren(resource, baseUrl = '') {
+export
+default
+function Siren(resource, baseUrl = '') {
     this.root = root(resource)
     this.json = JSON.stringify(this.root)
+
+    function log(message) {
+        console.log(message.toString())
+    }
 
     function root(object) {
         if (isArray(object))
@@ -31,8 +37,8 @@ export default function Siren(resource, baseUrl = '') {
 
     function entities(object, rel) {
         var entities = []
-        for (var prop in object) {
-            var value = object[prop]
+
+        publicMembers(object).each(({value, prop}) => {
             if (!isValue(value)) {
                 if (isArray(value))
                     entities.push(shallowArray(value, object, prop, rel))
@@ -41,7 +47,8 @@ export default function Siren(resource, baseUrl = '') {
                         entities.push(entity(value, object, prop, rel))
                 }
             }
-        }
+        })
+
         return entities
     }
 
@@ -52,6 +59,7 @@ export default function Siren(resource, baseUrl = '') {
 
     // All non-root collections should only store an href and not its resolved constituents
     function shallowArray(objects, parentObject, parentProperty, parentRel) {
+        log('shallowArray: parent:' + JSON.stringify(parentObject) + ' parent.prop:' + parentProperty + ' value:' + JSON.stringify(objects))
         if (!isArray(objects))
             throw Errors.typeArg('objects', 'array')
         return {
@@ -87,11 +95,12 @@ export default function Siren(resource, baseUrl = '') {
 
     function properties(object) {
         var props = {}
-        for (var prop in object) {
-            var value = object[prop]
+        
+        publicMembers(object).each(({value, prop}) => {
             if (isValue(value))
                 props[prop] = value
-        }
+        })
+        log('properties: ' + JSON.stringify(props))
         return props
     }
 
@@ -99,8 +108,8 @@ export default function Siren(resource, baseUrl = '') {
     function links(object, parent, parentProperty) {
         var links = []
         links.push(linkSelf(object, parent, parentProperty))
-        for (var prop in object) {
-            var value = object[prop]
+        
+        publicMembers(object).each(({value, prop}) => {
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
                 if (typeOf(annotation).match(/get/i)) {
@@ -111,7 +120,7 @@ export default function Siren(resource, baseUrl = '') {
                     links.push(link)
                 }
             }
-        }
+        })
 
         function link(name, href, object) {
             return {
@@ -144,9 +153,7 @@ export default function Siren(resource, baseUrl = '') {
     function actions(object) {
         var actions = [];
 
-        for (var prop in object) {
-            var value = object[prop]
-
+        publicMembers(object).each(({value, prop}) => {
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
                 if (typeOf(annotation).match(/post|put|delete|patch/i)) {
@@ -163,7 +170,7 @@ export default function Siren(resource, baseUrl = '') {
                     actions.push(action)
                 }
             }
-        }
+        })
 
         return actions
     }
@@ -206,6 +213,16 @@ export default function Siren(resource, baseUrl = '') {
         //var url = relativeUrl.replace(parmPattern)
         // combine baseUrl
         return Path.join(baseUrl, relativeUrl).replace('\\', '/')
+    }
+
+    // Iterates through only public properties and methods. Public are all those without _ appended or prepended to field name.
+    function publicMembers(object) {
+        var members = []
+        for (var prop in object) {
+            if (!prop.match(/^_|_$/))
+                members.push({prop:prop, value:object[prop]})
+        }
+        return Lazy(members)
     }
 
 }

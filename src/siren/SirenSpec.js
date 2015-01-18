@@ -131,6 +131,20 @@ describe('siren:', () => {
             siren.root.entities[0].properties.real.should.equal(1.2)
             siren.root.entities[0].properties.string.should.equal('a')
         })
+        
+        it('do not expose any private properties or subentities', () => {
+            function Entity() {
+                this._private = 1
+                this.private_ = 1
+                this._subEntity = new SubEntity()
+                this.subEntity_ = new SubEntity()
+            }
+            function SubEntity() {}
+            var entity = new Entity()
+            var siren = new Siren(entity)
+            siren.root.properties.should.deep.equal({})
+            siren.root.entities.should.be.empty
+        })
     })
 
     describe('entities:', () => {
@@ -331,11 +345,26 @@ describe('siren:', () => {
 
         it('entity auto linking by decorated methods only works if entity is created using class syntax (limitation due to annotation support from traceur)', () => {
             function Entity() {
+                @Get('url')
                 this.method = function () {}
             }
             var entity = new Entity()
             var siren = new Siren(entity)
             siren.root.links[0].rel.should.deep.equal(['self'])
+            siren.root.links.length.should.equal(1)
+        })
+        
+        it('links do not expose any private methods regardless of what they are decorated with', () => {
+             class Entity {
+                @Get('url')
+                _method(x) {}
+            
+                @Get('url2')
+                method_(y) {}
+            }
+           var entity = new Entity()
+           var siren = new Siren(entity)
+           siren.root.links[0].rel.should.deep.equal(['self'])
             siren.root.links.length.should.equal(1)
         })
     })
@@ -391,6 +420,19 @@ describe('siren:', () => {
            fields[1].name.should.equal('b')
            fields[2].name.should.equal('c')
            fields[3].name.should.equal('d')
+        })
+        
+        it('actions do not expose any private methods regardless of what they are decorated with', () => {
+             class Entity {
+                @Post('url')
+                _method(x) {}
+            
+                @Post('url2')
+                method_(y) {}
+            }
+           var entity = new Entity()
+           var siren = new Siren(entity)
+           siren.root.actions.should.be.empty
         })
     })
 
