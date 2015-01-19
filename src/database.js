@@ -39,9 +39,8 @@ export default class Database{
                                   }
 
                                   done();
-                                  [id, term, tags, definition] = result.rows[0]
-                                  var term = new Term(id, term, definition, tags)
-                                  callback(term)
+                                  var term = new Term(result.rows[0].id, result.rows[0].term, result.rows[0].definition, result.rows[0].tags || []);
+                                  callback(term);
                               });
         });
     };
@@ -63,7 +62,6 @@ export default class Database{
                                   }
 
                                   done();
-                                  
                                   callback(result);
                               });
         });
