@@ -1,4 +1,4 @@
-# definely
+# definely ![Travis CI Build Status](https://travis-ci.org/ritterim/definely.svg)
 
 This project is intended to allow the creation of words and abbreviations and connecting to definitions.
 
