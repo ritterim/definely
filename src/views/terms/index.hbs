@@ -1,0 +1,26 @@
+<div class="container">
+    <h3>Search results for <kbd>{{searchTerm}}</kbd></h3>
+    <table class="table table-striped table-bordered">
+        <tbody>
+            {{#each terms}}
+            <tr>
+                <td>
+                    <i class="glyphicon glyphicon-book {{this.rankClass}}"></i>
+                    <a href="/terms/{{this.id}}">{{this.term}}</a>
+
+                    <a href="/terms/{{this.id}}/edit" title="Edit">
+                        <i class="glyphicon glyphicon-edit pull-right"></i>
+                    </a>
+                    <div class="clearfix"></div>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td>
+                    No results found. You should <a href="/terms/new?term={{searchTerm}}">create a new entry for <kbd>{{searchTerm}}</kbd></a>.
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,25 @@
+<div class="container">
+    <form action="/terms/{{term.id}}?hapi_method=put" method="POST">
+        <div class="row">
+            <div class="col-xs-6 form-group">
+                <label for="term">Term</label>
+                <input id="term" name="term" class="form-control" placeholder="What is the term?" value="{{term.term}}" />
+            </div>
+            <div class="col-xs-6 form-group">
+                <label for="tags">Tags</label>
+                <input id="tags" name="tags" class="form-control" placeholder="Separate tags with spaces" value="{{term.tags}}" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 form-group">
+                <label for="definition">Definition</label>
+                <textarea id="definition" name="definition" rows="10" class="form-control" placeholder="What does this term mean?">{{term.definition}}</textarea>
+            </div>
+        </div>
+        <div class="row text-right">
+            <div class="col-md-12">
+                <button class="btn btn-primary">Update</button>
+            </div>
+        </div>
+    </form>
+</div>
