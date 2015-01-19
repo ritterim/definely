@@ -1,11 +1,9 @@
 import Errors from '../Errors'
 import Lazy from 'lazy.js'
 import Path from 'path'
-
-export
-default
-
-function Siren(resource, baseUrl = '') {
+import _ from '../extensions'
+    
+export default function Siren(resource, baseUrl = '') {
     this.root = root(resource)
     this.json = JSON.stringify(this.root)
 
@@ -139,6 +137,7 @@ function Siren(resource, baseUrl = '') {
 
         if (object.constructor.annotations) {
             url = object.constructor.annotations[0].url
+            url = fixUrl(url, object)
         } else if (parentObject) {
             var parentUrl = linkSelf(parentObject).href
             url = parentUrl ? parentUrl + '/' + parentProperty : ''
@@ -210,11 +209,17 @@ function Siren(resource, baseUrl = '') {
     }
 
     function fixUrl(relativeUrl, object) {
-        // add any matching route parameters
-        //var parmPattern = /:(.*?)\/|\{(.*?)\}/ig
-        //var url = relativeUrl.replace(parmPattern)
-        // combine baseUrl
-        return Path.join(baseUrl, relativeUrl).replace('\\', '/')
+        // replace any parameters in url
+        var parmPattern = /:[^\/]*|\{.*?\}/g
+        Lazy(relativeUrl.match(parmPattern))
+        .map(e=>e.replace(/[\{\}:]/g, ''))
+        .map(e=>({parm: e, value: object[e]}))
+        .each(e=>relativeUrl = relativeUrl.replace('{' + e.parm + '}', e.value)
+                            .replace(':' + e.parm, e.value))
+        
+        // append the base url to the relative one
+        var url = (baseUrl + (baseUrl?'/':'') + relativeUrl).normalize()
+        return url
     }
 
     // Iterates through only public properties and methods. Public are all those without _ appended or prepended to field name.

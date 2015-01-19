@@ -2,7 +2,7 @@ import HomeController from './HomeController'
 import TermsController from './TermsController'
 import TermApiController from './api/TermApiController'
 
-export default function setup(server) {
+export default function register(server) {
 	
 	// Views
 	new HomeController(server)

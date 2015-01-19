@@ -1,5 +1,6 @@
 import Controller from '../Controller'
 import Siren from '../../siren/Siren'	
+import extensions from '../../extensions'    
     
 export default class ApiController extends Controller {
 	constructor(router, baseUrl = '') {
@@ -8,7 +9,8 @@ export default class ApiController extends Controller {
 	}
     
     siren(entity) {
-        var siren = new Siren(entity)
+        var url = super.absoluteUrl(url)
+        var siren = new Siren(entity, url)
         return siren.json
     }
 }

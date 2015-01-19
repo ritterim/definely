@@ -303,26 +303,28 @@ describe('siren:', () => {
                 siren3.root.entities[1].links[0].href.should.equal('url2')
             })
 
-            xit('selfLink.href supports parameters in the form path/:param', () => {
-                @Get('url/:id')
+            it('selfLink.href supports parameters in the form path/:parm', () => {
+                @Get(':parm1/url/:parm2/url/:parm3')
                 class Entity{
-                    get id() { return id_ = id_ || 0}
+                    get parm1() { return 1 }
+                    get parm2() { return 2 }
+                    get parm3() { return 'a' }
                 }
                 var entity = new Entity()
-                entity.id = 5
                 var siren = new Siren(entity)
-                siren.root.links[0].href.should.equal('url/5')
+                siren.root.links[0].href.should.equal('1/url/2/url/a')
             })
 
-            xit('selfLink.href supports parameters in the form path/:param', () => {
-                @Get('url/{id}')
+            it('selfLink.href supports parameters in the form path/{parm}', () => {
+                @Get('{parm1}/url/{parm2}/url/{parm3}')
                 class Entity{
-                    get id() { return id_ = id_ || 0}
+                    get parm1() { return 1 }
+                    get parm2() { return 2 }
+                    get parm3() { return 'a' }
                 }
                 var entity = new Entity()
-                entity.id = 5
                 var siren = new Siren(entity)
-                siren.root.links[0].href.should.equal('url/5')
+                siren.root.links[0].href.should.equal('1/url/2/url/a')
             })
 
             it('selfLink.href will assume the default form parentSelfLink.href/parentProperty if no custom attributes decorate the entity', () =>{

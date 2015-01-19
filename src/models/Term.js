@@ -1,6 +1,6 @@
 import {Get, Post, Put, Patch, Delete} from '../siren/attributes'
     
-@Get('terms/id')
+@Get('terms/:id')
 export default class Term {
     constructor(id=0,term='',definition='',tags=[]) {
         this.id = id
@@ -26,14 +26,14 @@ export default class Term {
     }
     
     @Put('putUrl')
-    putMethod() {
+    putMethod(a) {
     }
     
     @Patch('patchUrl')
-    patchMethod() {
+    patchMethod(b,c) {
     }
     
     @Delete('deleteUrl') 
-    deleteMethod() {
+    deleteMethod(d,e,f) {
     }
 }

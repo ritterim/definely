@@ -2,6 +2,7 @@ export default class Controller {
     constructor(router, baseUrl = '') {
         this.router = router
         this.baseUrl = baseUrl
+        this.absoluteUrl.bind(this)
     }
 
     get(relativeUrl, handler, name = null) {
@@ -39,10 +40,14 @@ export default class Controller {
         this.router.route(route)
     }
 
-    url(relativeUrl) {
+    url(relativeUrl='') {
         var url = ('/' + this.baseUrl + '/' + relativeUrl).normalize('/')
         if (url != '/')
             url = url.trimEnd('/')
-        return url.normalize('/')
+        return url
+    }
+    
+    absoluteUrl(relativeUrl='') {
+        return (this.router.info.uri + "/" + this.url(relativeUrl)).normalize()
     }
 }

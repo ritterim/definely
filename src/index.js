@@ -1,6 +1,6 @@
 import Hapi from 'hapi'
 import Path from 'path'
-import controllers from './controllers/index'
+import registerControllers from './controllers/index'
 import _ from './extensions'
 import Lazy from 'lazy.js'
 import Handlebars from 'handlebars';
@@ -9,7 +9,7 @@ Handlebars.registerHelper("currentYear", function() {
     return new Date().getFullYear();
 });
 
-spawnServer('App', 3000, controllers, {
+spawnServer('App', 3000, registerControllers, {
     engines: {
         hbs: Handlebars
     },
@@ -19,7 +19,7 @@ spawnServer('App', 3000, controllers, {
     layout: 'layout'
 })
 
-function spawnServer(name, port, controllers, viewOptions) {
+function spawnServer(name, port, registerControllers, viewOptions) {
 
     var server = new Hapi.Server()
 
@@ -40,8 +40,8 @@ function spawnServer(name, port, controllers, viewOptions) {
         return reply.continue();
     });
 
-    controllers(server)
-
+    registerControllers(server)
+    
     server.start(() => {
         console.log(name + ' server running at:', server.info.uri)
         outputRoutes(server)
