@@ -165,7 +165,7 @@ export default function Siren(resource, baseUrl = '') {
                         method: typeOf(annotation).toUpperCase(),
                         fields: args(value).map(arg => ({
                             name: arg,
-                            type: typeOf(value)
+                            type: 'todo'
                         }))
                     }
                     actions.push(action)

@@ -1,4 +1,5 @@
 import {Get, Post, Put, Patch, Delete} from '../siren/attributes'
+import TestApi from './TestApi'
     
 @Get('terms/:id')
 export default class Term {
@@ -20,6 +21,9 @@ export default class Term {
     
     get definition() { return this.definition_ = this.definition_ || ''}
     set definition(value:string) { this.definition_ = value}
+    
+    get testApi() { return this.testApi_ = this.testApi_}
+    set testApi(value:TestApi) { this.testApi_ = value }
     
     @Post('postUrl')
     postMethod() {
