@@ -1,9 +1,9 @@
 export default class Controller {
     constructor(router, baseUrl = '') {
         this.router = router
-        this.baseUrl = '/' + baseUrl.trimBoth('/')
+        this.baseUrl = baseUrl
     }
-
+    
     get(relativeUrl, handler, name = null) {
         this.route('GET', this.url(relativeUrl), handler)
     }
@@ -31,15 +31,26 @@ export default class Controller {
             config: {
                 handler
             }
-        }
 
+        }
         if (name)
             route.config.id = name
 
         this.router.route(route)
     }
 
-    url(relativeUrl) {
-        return (this.baseUrl + '/' + relativeUrl).normalize('/');
+    url(relativeUrl='') {
+        var url = ('/' + this.baseUrl + '/' + relativeUrl).normalize('/')
+        if (url != '/')
+            url = url.trimEnd('/')
+        return url
+    }
+    
+    absoluteUrl(relativeUrl='') {
+        console.log('asdf')
+//        console.log(this.router)
+//        console.log(this.router.info.uri)
+//        console.log(url())
+        return (this.router.info.uri + "/" + this.url(relativeUrl)).normalize()
     }
 }

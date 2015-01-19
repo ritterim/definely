@@ -1,10 +1,9 @@
 import Errors from '../Errors'
 import Lazy from 'lazy.js'
-
-export
-default
-
-function Siren(resource) {
+import Path from 'path'
+import _ from '../extensions'
+    
+export default function Siren(resource, baseUrl = '') {
     this.root = root(resource)
     this.json = JSON.stringify(this.root)
 
@@ -33,8 +32,10 @@ function Siren(resource) {
 
     function entities(object, rel) {
         var entities = []
-        for (var prop in object) {
-            var value = object[prop]
+
+        publicMembers(object).each(({
+            value, prop
+        }) => {
             if (!isValue(value)) {
                 if (isArray(value))
                     entities.push(shallowArray(value, object, prop, rel))
@@ -43,7 +44,8 @@ function Siren(resource) {
                         entities.push(entity(value, object, prop, rel))
                 }
             }
-        }
+        })
+
         return entities
     }
 
@@ -89,11 +91,13 @@ function Siren(resource) {
 
     function properties(object) {
         var props = {}
-        for (var prop in object) {
-            var value = object[prop]
+
+        publicMembers(object).each(({
+            value, prop
+        }) => {
             if (isValue(value))
                 props[prop] = value
-        }
+        })
         return props
     }
 
@@ -101,19 +105,26 @@ function Siren(resource) {
     function links(object, parent, parentProperty) {
         var links = []
         links.push(linkSelf(object, parent, parentProperty))
-        for (var prop in object) {
-            var value = object[prop]
+
+        publicMembers(object).each(({
+            value, prop
+        }) => {
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
-                if (typeOf(annotation).match(/get/i))
-                    links.push(link(prop, annotation.url))
+                if (typeOf(annotation).match(/get/i)) {
+                    var link = {
+                        rel: [prop],
+                        href: fixUrl(annotation.url, object)
+                    }
+                    links.push(link)
+                }
             }
-        }
+        })
 
-        function link(name, href) {
+        function link(name, href, object) {
             return {
                 rel: [name],
-                href
+                href: fixUrl(href, object)
             }
         }
 
@@ -123,8 +134,10 @@ function Siren(resource) {
     function linkSelf(object, parentObject, parentProperty) {
         object = object || {}
         var url
+
         if (object.constructor.annotations) {
             url = object.constructor.annotations[0].url
+            url = fixUrl(url, object)
         } else if (parentObject) {
             var parentUrl = linkSelf(parentObject).href
             url = parentUrl ? parentUrl + '/' + parentProperty : ''
@@ -139,28 +152,26 @@ function Siren(resource) {
     function actions(object) {
         var actions = [];
 
-        for (var prop in object) {
-            var value = object[prop]
-
+        publicMembers(object).each(({
+            value, prop
+        }) => {
             if (isFunction(value) && value.annotations && value.annotations.length > 0) {
                 var annotation = value.annotations[0]
-                if (typeOf(annotation).match(/post|put|delete|patch/i))
-                    actions.push(action(value, prop, annotation))
+                if (typeOf(annotation).match(/post|put|delete|patch/i)) {
+                    var action = {
+                        name: prop,
+                        title: prop,
+                        href: fixUrl(annotation.url, object),
+                        method: typeOf(annotation).toUpperCase(),
+                        fields: args(value).map(arg => ({
+                            name: arg,
+                            type: 'todo'
+                        }))
+                    }
+                    actions.push(action)
+                }
             }
-        }
-
-        function action(func, prop, annotation) {
-            return {
-                name: prop,
-                title: prop,
-                href: annotation.url,
-                method: typeOf(annotation).toUpperCase(),
-                fields: args(func).map(arg => ({
-                    name: arg,
-                    type: typeOf(value)
-                }))
-            }
-        }
+        })
 
         return actions
     }
@@ -189,12 +200,39 @@ function Siren(resource) {
     function isObject(object) {
         return (typeof object) == 'object'
     }
-    
+
     function args(func) {
         var match = func.toString().match(/function.*?\((.*?)\)/)[1]
         if (!match)
             return []
-        return match.split(',').map(e=>e.trim())
+        return match.split(',').map(e => e.trim())
+    }
+
+    function fixUrl(relativeUrl, object) {
+        // replace any parameters in url
+        var parmPattern = /:[^\/]*|\{.*?\}/g
+        Lazy(relativeUrl.match(parmPattern))
+        .map(e=>e.replace(/[\{\}:]/g, ''))
+        .map(e=>({parm: e, value: object[e]}))
+        .each(e=>relativeUrl = relativeUrl.replace('{' + e.parm + '}', e.value)
+                            .replace(':' + e.parm, e.value))
+        
+        // append the base url to the relative one
+        var url = (baseUrl + (baseUrl?'/':'') + relativeUrl).normalize()
+        return url
+    }
+
+    // Iterates through only public properties and methods. Public are all those without _ appended or prepended to field name.
+    function publicMembers(object) {
+        var members = []
+        for (var prop in object) {
+            if (!prop.match(/^_|_$/))
+                members.push({
+                    prop: prop,
+                    value: object[prop]
+                })
+        }
+        return Lazy(members)
     }
 
 }

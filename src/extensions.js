@@ -16,5 +16,5 @@ String.prototype.trimStart = function(s) {
 }
 
 String.prototype.trimEnd = function(s) {
-	return this.replace(new RegExp(s + "+$", "gm"), "");
+	return this.replace(new RegExp(s + "+$", "gm"), "")
 }

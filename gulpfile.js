@@ -52,7 +52,7 @@ gulp.task('test', ['build'], function () {
 })
 
 function serve(isDev) {
-    require('./build/index')
+    require('./build')
 
     var debug = true //args.debug || args.debugBrk
 

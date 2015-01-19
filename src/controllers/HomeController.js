@@ -2,7 +2,7 @@ import Controller from './Controller'
 
 export default class HomeController extends Controller {
     constructor(router) {
-        super(router, '/')
+        super(router)
         this.get('/', this.index)
     }
 
