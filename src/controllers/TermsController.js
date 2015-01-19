@@ -1,6 +1,7 @@
 import Controller from './Controller'
 import pg from 'pg'
 import Database from '../database'
+import config from '../../config'
 
 export default class TermsController extends Controller {
     constructor(router) {
@@ -13,7 +14,7 @@ export default class TermsController extends Controller {
         this.post('/new', this.create.bind(this));
         this.put('/{id}', this.update.bind(this));
 
-        this.database = new Database(process.env['DATABASE_URL']);
+        this.database = new Database(process.env['DATABASE_URL'])
     }
 
     create(request, reply) {
