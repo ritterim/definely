@@ -9,10 +9,6 @@ function Siren(resource, baseUrl = '') {
     this.root = root(resource)
     this.json = JSON.stringify(this.root)
 
-    function log(message) {
-        console.log(message.toString())
-    }
-
     function root(object) {
         if (isArray(object))
             return deepArray(object)
@@ -62,7 +58,6 @@ function Siren(resource, baseUrl = '') {
 
     // All non-root collections should only store an href and not its resolved constituents
     function shallowArray(objects, parentObject, parentProperty, parentRel) {
-        log('shallowArray: parent:' + JSON.stringify(parentObject) + ' parent.prop:' + parentProperty + ' value:' + JSON.stringify(objects))
         if (!isArray(objects))
             throw Errors.typeArg('objects', 'array')
         return {
@@ -105,7 +100,6 @@ function Siren(resource, baseUrl = '') {
             if (isValue(value))
                 props[prop] = value
         })
-        log('properties: ' + JSON.stringify(props))
         return props
     }
 
@@ -142,20 +136,14 @@ function Siren(resource, baseUrl = '') {
     function linkSelf(object, parentObject, parentProperty) {
         object = object || {}
         var url
-        console.log(JSON.stringify(object))
-        if (object.annotations)
-            console.log(object.annotations)
 
-//        try {
-            if (object.constructor && object.constructor.annotations) {
-                url = object.constructor.annotations[0].url
-            } else if (parentObject) {
-                var parentUrl = linkSelf(parentObject).href
-                console.log(parentUrl)
-                url = parentUrl ? parentUrl + '/' + parentProperty : ''
-            }
-//        } catch (error) {}
-            
+        if (object.constructor.annotations) {
+            url = object.constructor.annotations[0].url
+        } else if (parentObject) {
+            var parentUrl = linkSelf(parentObject).href
+            url = parentUrl ? parentUrl + '/' + parentProperty : ''
+        }
+
         return {
             rel: ['self'],
             href: url || ''
