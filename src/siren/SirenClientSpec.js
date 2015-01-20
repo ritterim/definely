@@ -2,7 +2,7 @@ import SirenClient from './SirenClient'
 import chai from 'chai'
 var should = chai.should()
 
-describe.only('SirenClient:', () => {
+describe('SirenClient:', () => {
     describe('properties:', () => {
         it('contains all properties from siren json', () => {
             var json = JSON.stringify({
