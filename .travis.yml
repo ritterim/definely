@@ -4,3 +4,12 @@ node_js:
 before_script:
   - npm install -g gulp
 script: gulp test
+deploy:
+  provider: heroku
+  api_key:
+    secure: XUA/1PwvZbrTh6PXaaAtVb2IdLIx+b5u7WO0Zpu07C2PkRyvmY3bNB1Yk9umXyOEvu5bLvOrCvZjLgdsdDM0u0HYYskDBdJdibZSeam+x9+3H8HO8FoLmDqdYmo8j/W4zjYLxQ47hgLIwiaA/EZMFJO5ujtJsH5HENJDuOcoZaU=
+  app:
+    master: ritterim-definely
+  run:
+    - "npm update"
+    - "./node_modules/.bin/pg-migrate up"
