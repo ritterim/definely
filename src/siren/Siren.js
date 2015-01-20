@@ -1,4 +1,5 @@
-import Errors from '../Errors'
+import chai from 'chai'
+var should = chai.should()
 import Lazy from 'lazy.js'
 import Path from 'path'
 import _ from '../extensions'
@@ -12,13 +13,13 @@ export default function Siren(resource, baseUrl = '') {
             return deepArray(object)
         else if (isObject(object))
             return entity(object)
-        throw Errors.typeArg('object', 'array|object')
+        
+        true.should.be.false
     }
 
     function entity(object, parentObject, parentProperty, parentRel) {
-        if (object === null)
-            throw Errors.nullArg('object')
-
+        object.should.not.be.null
+        
         var relValue = rel(object, parentRel)
         return {
             class: cls(object, parentProperty),
@@ -56,8 +57,7 @@ export default function Siren(resource, baseUrl = '') {
 
     // All non-root collections should only store an href and not its resolved constituents
     function shallowArray(objects, parentObject, parentProperty, parentRel) {
-        if (!isArray(objects))
-            throw Errors.typeArg('objects', 'array')
+        objects.should.be.an('array')
         return {
             class: cls(objects, parentProperty),
             rel: rel(objects, parentRel),
@@ -66,8 +66,7 @@ export default function Siren(resource, baseUrl = '') {
     }
 
     function cls(object, parentProperty = '') {
-        if (object === null)
-            throw Errors.nullArg('object')
+        object.should.be.truthy
         var type = typeOf(object)
         parentProperty = parentProperty.trim()
         var cls = []
@@ -78,8 +77,7 @@ export default function Siren(resource, baseUrl = '') {
     }
 
     function rel(object, parentRel = null) {
-        if (object === null)
-            throw Errors.nullArg('object')
+        object.should.be.truthy
         var type = typeOf(object)
         var rel
         if (!parentRel)
