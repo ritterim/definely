@@ -39,7 +39,7 @@ export default class Database{
                                   }
 
                                   done();
-                                  var term = new Term(result.rows[0].id, result.rows[0].term, result.rows[0].definition, result.rows[0].tags || []);
+                                  var term = new Term(result.rows[0].id, result.rows[0].term, result.rows[0].definition, result.rows[0].tags.join([separator = ',']) || []);
                                   callback(term);
                               });
         });
@@ -85,7 +85,7 @@ export default class Database{
                                     element = new Term();
                                     element.id = id;
                                     element.term = term;
-                                    element.tags = tags;
+                                    element.tags = tags.join([separator = ',']);
                                     element.definition = definition;
                                   });
                 
