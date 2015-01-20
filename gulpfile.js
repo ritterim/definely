@@ -58,12 +58,6 @@ gulp.task('test', ['build'], function () {
         }))
 })
 
-gulp.task('db-migrate', function () {
-    process.argv[2] = 'up'
-    process.env['DATABASE_URL'] = config.connectionString
-    return require('node-pg-migrate/bin/pg-migrate')
-})
-
 function serve(isDev) {
     require('./build')
 
