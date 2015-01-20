@@ -126,7 +126,6 @@ describe('SirenClient:', () => {
                 }]
             })
             var siren = new SirenClient(json)
-            console.log(JSON.stringify(siren.view))
             siren.view.actions.postMethod.should.have.property('template')
             siren.view.actions.postMethod.template.p1.should.equal(1)
             siren.view.actions.postMethod.template.p2.should.equal("string")
