@@ -14,13 +14,16 @@ function SirenClient(sirenJson) {
     this.view = parse(this.root)
 
     function parse(root) {
-        var view = {}
-        addProperties(view, root)
-        addLinks(view, root)
-        addActions(view, root)
-        addEntities(view, root)
-
-        return view
+        if (Array.isArray(root))
+            return root.map(parse)
+        else {
+            var view = {}
+            addProperties(view, root)
+            addLinks(view, root)
+            addActions(view, root)
+            addEntities(view, root)
+            return view
+        }
     }
 
     function addProperties(view, object) {

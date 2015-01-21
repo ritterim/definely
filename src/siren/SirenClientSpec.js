@@ -5,32 +5,61 @@ var should = chai.should()
 
 
 describe('SirenClient:', () => {
+    describe('array:', () => {
+        it('handles arrays by mapping each element to a parsed element', () => {
+            var json = JSON.stringify([
+                {
+                    properties: {
+                        p1: 1
+                    }
+                },
+                {
+                    properties: {
+                        p2: 'string'
+                    }
+                }
+            ])
+            var siren = new SirenClient(json)
+            siren.view.should.be.an('array')
+            siren.view.length.should.equal(2)
+            siren.view[0].p1.should.equal(1)
+            siren.view[1].p2.should.equal('string')
+        })
+    })
     describe('properties:', () => {
         it('contains all properties from siren json', () => {
             var json = JSON.stringify({
                 properties: {
-                    p1: 1,
-                    p2: 'string'
+                    num: 1,
+                    float: 1.2,
+                    string: 'string',
+                    simpleArray: ['a', 1, 1.2]
                 }
             })
             var siren = new SirenClient(json)
-            siren.view.p1.should.equal(1)
-            siren.view.p2.should.equal('string')
+            siren.view.num.should.equal(1)
+            siren.view.float.should.equal(1.2)
+            siren.view.string.should.equal('string')
+            siren.view.simpleArray.should.deep.equal(['a', 1, 1.2])
         })
 
         it('contains all properties from nested entities', () => {
             var json = JSON.stringify({
                 entities: [{
-                    class: ["p", "p1Type"],
+                    class: ["p", "pType"],
                     properties: {
-                        p1: 1,
-                        p2: 'string'
+                        num: 1,
+                        float: 1.2,
+                        string: 'string',
+                        simpleArray: ['a', 1, 1.2]
                     }
                 }]
             })
             var siren = new SirenClient(json)
-            siren.view.p.p1.should.equal(1)
-            siren.view.p.p2.should.equal('string')
+            siren.view.p.num.should.equal(1)
+            siren.view.p.float.should.equal(1.2)
+            siren.view.p.string.should.equal('string')
+            siren.view.p.simpleArray.should.deep.equal(['a', 1, 1.2])
         })
     })
 
@@ -48,7 +77,7 @@ describe('SirenClient:', () => {
             siren.view.p1.should.be.an('object')
             siren.view.p2.should.be.an('object')
         })
-        
+
         it('non embedded collection entities should be added to collections object', () => {
             var json = JSON.stringify({
                 entities: [{
@@ -64,7 +93,7 @@ describe('SirenClient:', () => {
             siren.view.entity.should.be.an('object')
         })
     })
-    
+
     describe('links:', () => {
         it('contains all links', () => {
             var json = JSON.stringify({
