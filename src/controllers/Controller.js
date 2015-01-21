@@ -1,7 +1,14 @@
+import SirenClient from '../siren/SirenClient'
+
 export default class Controller {
     constructor(router, baseUrl = '') {
         this.router = router
         this.baseUrl = baseUrl
+    }
+
+    siren(json) {
+        var siren = new SirenClient(json)
+        return siren.view
     }
 
     get(relativeUrl, handler, name = null) {
