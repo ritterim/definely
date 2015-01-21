@@ -3,4 +3,7 @@ exports.up = function(pgm, run) {
   run();
 };
 
-exports.down = false;
+exports.down = function(pgm, run) {
+    pgm.sql("alter sequence term_id_seq restart with 1");
+    run();
+};
