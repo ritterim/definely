@@ -37,7 +37,7 @@ export default function Siren(resource, baseUrl = '') {
         publicMembers(object).each(({
             value, prop
         }) => {
-            if (!isValue(value)) {
+            if (!isValue(value) && !isValueArray(value)) {
                 if (isObjectArray(value))
                     entities.push(shallowArray(value, object, prop, rel))
                 else if (isObject(value)) {

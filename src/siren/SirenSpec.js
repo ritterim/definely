@@ -169,22 +169,20 @@ describe('siren:', () => {
                 this.num = 1
                 this.real = 1.2
                 this.string = 'a'
+                this.simpleArray = [1, 1.2, 'a'],
                 this.complex = new Complex(),
                 this.complex2 = new Complex2(),
-                this.complexArray = [1, 2, 3],
-                this.complexArray2 = [new Complex(), new Complex2()]
+                this.complexArray = [new Complex(), new Complex2()]
             }
-
             function Complex() {}
-
             function Complex2() {}
+            
             var entity = new Entity()
             var siren = new Siren(entity)
-            siren.root.entities.length.should.equal(4)
+            siren.root.entities.length.should.equal(3)
             siren.root.entities[0].class[0].should.equal('complex')
             siren.root.entities[1].class[0].should.equal('complex2')
             siren.root.entities[2].class[0].should.equal('complexArray')
-            siren.root.entities[3].class[0].should.equal('complexArray2')
         })
 
         it('does not contain properties with null values', () => {
