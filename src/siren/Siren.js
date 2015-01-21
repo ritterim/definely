@@ -38,7 +38,7 @@ export default function Siren(resource, baseUrl = '') {
             value, prop
         }) => {
             if (!isValue(value)) {
-                if (isArray(value))
+                if (isObjectArray(value))
                     entities.push(shallowArray(value, object, prop, rel))
                 else if (isObject(value)) {
                     if (value != null)
@@ -93,7 +93,7 @@ export default function Siren(resource, baseUrl = '') {
         publicMembers(object).each(({
             value, prop
         }) => {
-            if (isValue(value))
+            if (isValue(value) || isValueArray(value))
                 props[prop] = value
         })
         return props
@@ -189,6 +189,15 @@ export default function Siren(resource, baseUrl = '') {
 
     function isArray(object) {
         return Array.isArray(object)
+    }
+    
+    // is the array an array of simple types?
+    function isValueArray(object) {
+        return Array.isArray(object) && Lazy(object).reduce((acc,next) => acc && isValue(next), true)
+    }
+    
+    function isObjectArray(object) {
+        return isArray(object) && !isValueArray(object)
     }
 
     function isFunction(object) {

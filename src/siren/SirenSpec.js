@@ -78,6 +78,16 @@ describe('siren:', () => {
             siren.root.properties.num2.should.equal(-1)
             siren.root.properties.real2.should.equal(-1.2)
         })
+        
+        it('may contain array of simple types', () => {
+            function Entity() {
+                this.array = ['string', 1, 1.2, -1, -1.2]
+            }
+            var entity = new Entity()
+            var siren = new Siren(entity)
+            Object.keys(siren.root.properties).length.should.equal(1)
+            siren.root.properties.array.should.deep.equal(['string', 1, 1.2, -1, -1.2])
+        })
 
         it('contains only simple types and no complex types', () => {
             function Entity() {
@@ -86,17 +96,21 @@ describe('siren:', () => {
                 this.string = 'a'
                 this.complex = new Complex()
                 this.nil = null
+                this.simpleArray = [this.num, this.real, this.string]
+                this.complexArray = [this.num, this.complex]
             }
 
             function Complex() {}
             var entity = new Entity()
             var siren = new Siren(entity)
-            Object.keys(siren.root.properties).length.should.equal(3)
-            siren.root.properties.hasOwnProperty('complex').should.be.false
-            siren.root.properties.hasOwnProperty('nil').should.be.false
+            Object.keys(siren.root.properties).length.should.equal(4)
+            siren.root.properties.should.not.have.property('complex')
+            siren.root.properties.should.not.have.property('nil')
+            siren.root.properties.should.not.have.property('complexArray')
             siren.root.properties.num.should.equal(1)
             siren.root.properties.real.should.equal(1.2)
             siren.root.properties.string.should.equal('a')
+            siren.root.properties.simpleArray.should.deep.equal([entity.num, entity.real, entity.string])
         })
 
         it('does not contain properties with null values', () => {
@@ -258,8 +272,7 @@ describe('siren:', () => {
             siren.root.links.length.should.equal(1)
         })
 
-        describe('self link:', () => {
-
+        describe('self:', () => {
             it('entity contains a self link', () => {
                 function Entity() {}
                 var entity = new Entity()
@@ -364,8 +377,9 @@ describe('siren:', () => {
             it('subentity collection contains a self link in the form of simply href instead of {rel:[self],href:}', () => {
                 @Get('url')
                 class Entity {
-                    get collection() { return []}
+                    get collection() { return [new SubEntity()]}
                 }
+                class SubEntity {}
                 var entity = new Entity()
                 var siren = new Siren(entity)
                 siren.root.entities[0].hasOwnProperty('links').should.be.false

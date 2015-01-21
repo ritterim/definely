@@ -61,30 +61,30 @@ function SirenClient(sirenJson) {
                     this.view.should.not.have.property(key)
                     this.view[key] = entity
                 })
+            )
+    }
+
+    function addLinks(view, object) {
+        view.links = {}
+        if (object.links) {
+            Lazy(object.links).each(link => view.links[link.rel[0]] = link.href)
+        }
+    }
+
+    function addActions(view, object) {
+        view.actions = {}
+        if (object.actions) {
+            Lazy(object.actions).each(action => {
+                view.actions[action.name] = {
+                    method: action.method,
+                    href: action.href,
+                    title: action.title,
+                    template: Lazy(action.fields || []).reduce((template, field) => {
+                        template[field.name] = field.value === undefined ? null : field.value
+                        return template
+                    }, {})
+                }
             })
-}
-
-function addLinks(view, object) {
-    view.links = {}
-    if (object.links) {
-        Lazy(object.links).each(link => view.links[link.rel[0]] = link.href)
+        }
     }
-}
-
-function addActions(view, object) {
-    view.actions = {}
-    if (object.actions) {
-        Lazy(object.actions).each(action => {
-            view.actions[action.name] = {
-                method: action.method,
-                href: action.href,
-                title: action.title,
-                template: Lazy(action.fields || []).reduce((template, field) => {
-                    template[field.name] = field.value === undefined ? null : field.value
-                    return template
-                }, {})
-            }
-        })
-    }
-}
 }
