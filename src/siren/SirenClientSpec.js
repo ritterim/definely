@@ -2,6 +2,8 @@ import SirenClient from './SirenClient'
 import chai from 'chai'
 var should = chai.should()
 
+
+
 describe('SirenClient:', () => {
     describe('properties:', () => {
         it('contains all properties from siren json', () => {
@@ -20,7 +22,6 @@ describe('SirenClient:', () => {
             var json = JSON.stringify({
                 entities: [{
                     class: ["p", "p1Type"],
-                    href: 'url1',
                     properties: {
                         p1: 1,
                         p2: 'string'
@@ -47,8 +48,23 @@ describe('SirenClient:', () => {
             siren.view.p1.should.be.an('object')
             siren.view.p2.should.be.an('object')
         })
+        
+        it('non embedded collection entities should be added to collections object', () => {
+            var json = JSON.stringify({
+                entities: [{
+                        class: ["collection", "collectionType"],
+                        href: 'collectionUrl'
+                },
+                    {
+                        class: ["entity", "entityType"],
+                    }]
+            })
+            var siren = new SirenClient(json)
+            siren.view.collections.collection.should.equal('collectionUrl')
+            siren.view.entity.should.be.an('object')
+        })
     })
-
+    
     describe('links:', () => {
         it('contains all links', () => {
             var json = JSON.stringify({

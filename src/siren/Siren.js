@@ -14,7 +14,7 @@ export default function Siren(resource, baseUrl = '') {
         else if (isObject(object))
             return entity(object)
         
-        true.should.be.false
+        throw 'object must be either an array or object'
     }
 
     function entity(object, parentObject, parentProperty, parentRel) {
