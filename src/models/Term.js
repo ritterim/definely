@@ -3,7 +3,7 @@ import {Get, Post, Put, Patch, Delete} from '../siren/attributes'
 @Get('terms/:id')
 export default class Term {
     constructor(id=0,term='',definition='',tags=[]) {
-        this.id = id
+        this.id = Number(id)
         this.term = term
         this.tags = tags
         this.definition = definition

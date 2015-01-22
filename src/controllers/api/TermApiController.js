@@ -48,14 +48,9 @@ export default class TermApiController extends ApiController {
 
     update(request, reply) {
         var id = request.params.id
-
+        var term = new Term(id, request.payload.term, request.payload.definition, request.payload.tags)
         this.database.update(
-            id,
-            request.payload.term,
-            request.payload.tags,
-            request.payload.definition,
-            function () {
-                reply.redirect('/terms/' + id)
-            })
+            term, () => reply.redirect('/terms/' + id)
+        )
     }
 }
