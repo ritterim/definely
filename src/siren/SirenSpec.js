@@ -4,7 +4,7 @@ import {
     Get, Post, Put, Patch, Delete
 }
 from './attributes'
-    
+
 import Term from '../models/Term'
 
 import Siren from './Siren'
@@ -133,7 +133,7 @@ describe('siren:', () => {
             siren.root.entities[0].properties.real.should.equal(1.2)
             siren.root.entities[0].properties.string.should.equal('a')
         })
-        
+
         it('do not expose any private properties or subentities', () => {
             function Entity() {
                 this._private = 1
@@ -215,7 +215,7 @@ describe('siren:', () => {
     })
 
     describe('links:', () => {
-        
+
         it('generated for every method decorated with Get attribute', () => {
             class Entity {
                 @Get('url')
@@ -243,12 +243,12 @@ describe('siren:', () => {
             siren.root.links[0].rel.should.deep.equal(['self'])
             siren.root.links.length.should.equal(1)
         })
-        
+
         it('links do not expose any private methods regardless of what they are decorated with', () => {
              class Entity {
                 @Get('url')
                 _method(x) {}
-            
+
                 @Get('url2')
                 method_(y) {}
             }
@@ -257,9 +257,9 @@ describe('siren:', () => {
            siren.root.links[0].rel.should.deep.equal(['self'])
             siren.root.links.length.should.equal(1)
         })
-        
+
         describe('self link:', () => {
-            
+
             it('entity contains a self link', () => {
                 function Entity() {}
                 var entity = new Entity()
@@ -293,7 +293,7 @@ describe('siren:', () => {
                 var siren2 = new Siren(entity2)
                 siren2.root.links[0].href.should.equal('url2')
 
-                class Entity3 { 
+                class Entity3 {
                     get entity() {return new Entity()}
                     get entity2() {return new Entity2()}
                 }
@@ -374,7 +374,7 @@ describe('siren:', () => {
             })
         })
     })
-    
+
     describe('actions:', () => {
         it('entity contains actions for every method decorated with Post, Put, Patch, or Delete attributes', () => {
             class Entity {
@@ -411,7 +411,7 @@ describe('siren:', () => {
             siren.root.actions[3].method.should.equal('DELETE')
             siren.root.actions[3].fields.should.be.empty
         })
-        
+
         it('entity contains action fields for every parameter of a decorated method', () => {
             class Entity {
                 @Post('post/url')
@@ -427,12 +427,12 @@ describe('siren:', () => {
            fields[2].name.should.equal('c')
            fields[3].name.should.equal('d')
         })
-        
+
         it('actions do not expose any private methods regardless of what they are decorated with', () => {
              class Entity {
                 @Post('url')
                 _method(x) {}
-            
+
                 @Post('url2')
                 method_(y) {}
             }

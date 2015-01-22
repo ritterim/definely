@@ -27,8 +27,8 @@ function spawnServer(name, port, registerControllers, viewOptions) {
         port
     })
 
-	if (viewOptions)
-		server.views(viewOptions);
+    if (viewOptions)
+        server.views(viewOptions);
 
     server.ext('onRequest', function (request, reply) {
         var methodOverride = request.query['hapi_method'];
@@ -41,7 +41,7 @@ function spawnServer(name, port, registerControllers, viewOptions) {
     });
 
     registerControllers(server)
-    
+
     server.start(() => {
         console.log(name + ' server running at:', server.info.uri)
         outputRoutes(server)
