@@ -3,7 +3,8 @@ import pg from 'pg'
 import Database from '../database'
 import Promise from 'bluebird'
 import _request from 'request'
-var Request = Promise.promisify(_request)
+var Request = Promise.promisifyAll(_request)
+import Lazy from 'lazy.js'
 
 export
 default class TermsController extends Controller {
@@ -21,11 +22,10 @@ default class TermsController extends Controller {
     index(request, reply) {
         var searchTerm = request.url.query['search-term']
         var url = this.absoluteUrl('api/terms?' + (searchTerm ? 'search-term=' + searchTerm : ''))
-
-        Request(url).then(json => {
-            var terms = super.siren(json)
+        Request.getAsync(url).then(data => {
+            var terms = super.siren(data[0].body)
             if (terms.length === 1)
-                reply.redirect('/terms/' + dbResponse.rows[0].id)
+                reply.redirect('/terms/' + terms[0].id)
             else {
                 Lazy(terms).each(t => {
                     t.rankClass = t.rank >= .8 ? 'text-success' : t.rank >= .5 ? 'text-warning' : t.rank >= .1 ? 'text-info' : 'text-danger'
@@ -42,14 +42,16 @@ default class TermsController extends Controller {
 
     create(request, reply) {
         var url = this.absoluteUrl('api/terms/new')
-        Request.postAsync(url, request.payload).then(id => {
-            reply.redirect('/terms/' + id);
+        Request.postAsync({url:url, form:request.payload}).then(data => {
+            var term = super.siren(data[0].body)
+            reply.redirect('/terms/' + term.id);
         })
     }
 
     edit(request, reply) {
         var url = this.absoluteUrl('api/terms/' + request.params.id)
-        Request(url).then(term => {
+        Request.getAsync(url).then(data => {
+            var term = super.siren(data[0].body)
             reply.view('terms/edit', {
                 title: 'Edit term',
                 term: term
@@ -59,11 +61,13 @@ default class TermsController extends Controller {
 
     show(request, reply) {
         var url = this.absoluteUrl('api/terms/' + request.params.id)
-        Request(url).then(term =>
+        Request.getAsync(url).then(data => {
+            var term = super.siren(data[0].body)
             reply.view('terms/show', {
                 title: 'Show term',
                 term: term
-            }))
+            })
+        })
     }
 
     new(request, reply) {
@@ -77,7 +81,7 @@ default class TermsController extends Controller {
         var id = request.params.id
         var url = this.absoluteUrl('api/terms/' + id)
         Request
-            .put(url, request.payload)
+            .putAsync({url:url, form:request.payload})
             .then(() => reply.redirect('/terms/' + id))
     }
 }

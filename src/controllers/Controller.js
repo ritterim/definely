@@ -54,10 +54,7 @@ export default class Controller {
     }
 
     absoluteUrl(relativeUrl='') {
-        console.log('asdf')
-//        console.log(this.router)
-//        console.log(this.router.info.uri)
-//        console.log(url())
-        return (this.router.info.uri + "/" + this.url(relativeUrl)).normalize()
+        var url = this.router.info.uri.trimEnd('/') + ("/" + relativeUrl).normalize('/')
+        return url
     }
 }

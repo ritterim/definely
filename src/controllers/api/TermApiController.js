@@ -1,7 +1,7 @@
 import ApiController from './ApiController'
 import Term from '../../models/Term'
 import Lazy from 'lazy.js'
-import Database from '../database'
+import Database from '../../database'
 
 var mock = [new Term(1, 'FMO', 'Field Marketing Organization', ['tag1', 'tag2']),
                new Term(2, 'CMS', 'Center for Medicare and Medicaid Services'),
@@ -18,7 +18,6 @@ export default class TermApiController extends ApiController {
         this.put('/{id}', this.update.bind(this));
 
         this.database = new Database(process.env['DATABASE_URL']);
-        this.sirenType = 'application/vnd.siren+json'
     }
 
     index(request, reply) {
@@ -26,25 +25,26 @@ export default class TermApiController extends ApiController {
         this.database.search(searchTerm, function (dbResponse) {
             var terms = dbResponse.rows
             var siren = super.siren(terms)
-            reply(siren).type(this.sirenType)
+            reply(siren).type('application/vnd.siren+json')
         })
     }
 
     new(request, reply) {
+        console.log('payload: ' + JSON.stringify(request.payload))
         this.database.add(
             request.payload.term,
             request.payload.tags,
             request.payload.definition,
             function (id) {
                 var siren = super.siren(new Term(id))
-                reply(siren).type(this.sirenType)
+                reply(siren).type('application/vnd.siren+json')
             })
     }
 
     show(request, reply) {
         this.database.find(request.params.id, function (term) {
             var siren = super.siren(term)
-            reply(siren).type(this.sirenType)
+            reply(siren).type('application/vnd.siren+json')
         })
     }
 

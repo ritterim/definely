@@ -3,7 +3,6 @@ import chai from 'chai'
 var should = chai.should()
 
 
-
 describe('SirenClient:', () => {
     describe('array:', () => {
         it('handles arrays by mapping each element to a parsed element', () => {
