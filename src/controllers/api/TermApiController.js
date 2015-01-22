@@ -30,7 +30,6 @@ export default class TermApiController extends ApiController {
     }
 
     new(request, reply) {
-        console.log('payload: ' + JSON.stringify(request.payload))
         this.database.add(
             request.payload.term,
             request.payload.tags,
@@ -59,7 +58,5 @@ export default class TermApiController extends ApiController {
             function () {
                 reply.redirect('/terms/' + id)
             })
-    } << << << < HEAD
-
-} === === =
-} >>> >>> > Updated api with siren api logic
+    }
+}
