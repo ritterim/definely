@@ -16,10 +16,7 @@ default class TermsController extends Controller {
         this.get('/new', this.new);
         this.post('/new', this.create.bind(this));
         this.put('/{id}', this.update.bind(this));
-
-        this.database = new Database(process.env['DATABASE_URL']);
     }
-
 
     index(request, reply) {
         var searchTerm = request.url.query['search-term']
@@ -27,12 +24,19 @@ default class TermsController extends Controller {
 
         Request(url).then(json => {
             var terms = super.siren(json)
-            var title = searchTerm == null ? 'Terms' : 'Search results for: ' + searchTerm;
-            reply.view('terms/index', {
-                searchTerm: searchTerm,
-                title: title,
-                terms: terms
-            })
+            if (terms.length === 1)
+                reply.redirect('/terms/' + dbResponse.rows[0].id)
+            else {
+                Lazy(terms).each(t => {
+                    t.rankClass = t.rank >= .8 ? 'text-success' : t.rank >= .5 ? 'text-warning' : t.rank >= .1 ? 'text-info' : 'text-danger'
+                })
+                var title = searchTerm == null ? 'Terms' : 'Search results for: ' + searchTerm;
+                reply.view('terms/index', {
+                    searchTerm: searchTerm,
+                    title: title,
+                    terms: terms
+                })
+            }
         })
     }
 
