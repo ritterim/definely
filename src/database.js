@@ -39,9 +39,15 @@ default class Database {
                         return console.error('Error running query', err);
                         done(client);
                     }
-
+                    
                     done();
-                    callback(result.rows[0]);
+                    var term = null
+                    if (result.rows.length > 0)
+                    {
+                        var row = result.rows[0]
+                        term = new Term(row.id, row.term, row.definition, row.tags||undefined)
+                    }
+                    callback(term);
                 });
         });
     };

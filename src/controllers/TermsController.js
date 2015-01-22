@@ -53,6 +53,7 @@ default class TermsController extends Controller {
         var url = this.absoluteUrl('api/terms/' + request.params.id)
         Request.getAsync(url).then(data => {
             var term = super.siren(data[0].body)
+            term.tags = term.tags.join(' ')
             reply.view('terms/edit', {
                 title: 'Edit term',
                 term: term
