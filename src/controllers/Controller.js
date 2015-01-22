@@ -3,7 +3,7 @@ export default class Controller {
         this.router = router
         this.baseUrl = baseUrl
     }
-    
+
     get(relativeUrl, handler, name = null) {
         this.route('GET', this.url(relativeUrl), handler)
     }
@@ -45,7 +45,7 @@ export default class Controller {
             url = url.trimEnd('/')
         return url
     }
-    
+
     absoluteUrl(relativeUrl='') {
         console.log('asdf')
 //        console.log(this.router)

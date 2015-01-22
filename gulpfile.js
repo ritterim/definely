@@ -32,23 +32,23 @@ gulp.task('clean', function () {
 })
 
 gulp.task('build', ['clean'], function () {
-	gulp.src('src/views/**')
-		.pipe(gulp.dest('build/views/'));
+    gulp.src('src/views/**')
+        .pipe(gulp.dest('build/views/'));
 
-	return gulp.src('src/**/*.js')
-		.pipe($.sourcemaps.init())
-		.pipe($.traceur({annotations:true, types:true, typeAssertions:true, typeAssertionModule:'../assert'}))
-		.pipe($.sourcemaps.write('.'))
-		.pipe(gulp.dest('build'))
+    return gulp.src('src/**/*.js')
+        .pipe($.sourcemaps.init())
+        .pipe($.traceur({annotations:true, types:true, typeAssertions:true, typeAssertionModule:'../assert'}))
+        .pipe($.sourcemaps.write('.'))
+        .pipe(gulp.dest('build'))
 })
 
 gulp.task('test', ['build'], function () {
-	return gulp.src('build/**/*Spec.js', {
-			read: false
-		})
-		.pipe($.mocha({
-			reporter: 'nyan'
-		}))
+    return gulp.src('build/**/*Spec.js', {
+            read: false
+        })
+        .pipe($.mocha({
+            reporter: 'nyan'
+        }))
 })
 
 function serve(isDev) {

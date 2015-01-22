@@ -1,13 +1,13 @@
 import Controller from '../Controller'
-import Siren from '../../siren/Siren'	
-    
+import Siren from '../../siren/Siren'
+
 export default class ApiController extends Controller {
-	constructor(router, baseUrl = '') {
-		baseUrl = '/api/' + baseUrl.trimBoth('/')
-		super(router, baseUrl)
+    constructor(router, baseUrl = '') {
+        baseUrl = '/api/' + baseUrl.trimBoth('/')
+        super(router, baseUrl)
         this.router = router
-	}
-    
+    }
+
     siren(entity) {
         //var url = super.absoluteUrl.bind(this, url)()
         var url = 'https://localhost:3000/api'
