@@ -29,6 +29,7 @@ default class TermsController extends Controller {
             else {
                 Lazy(terms).each(t => {
                     t.rankClass = t.rank >= .8 ? 'text-success' : t.rank >= .5 ? 'text-warning' : t.rank >= .1 ? 'text-info' : 'text-danger'
+                    t.tags = t.tags.join(' ')
                 })
                 var title = searchTerm == null ? 'Terms' : 'Search results for: ' + searchTerm;
                 reply.view('terms/index', {

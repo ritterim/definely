@@ -22,8 +22,7 @@ export default class TermApiController extends ApiController {
 
     index(request, reply) {
         var searchTerm = request.url.query['search-term'];
-        this.database.search(searchTerm, function (dbResponse) {
-            var terms = dbResponse.rows
+        this.database.search(searchTerm, function (terms) {
             var siren = super.siren(terms)
             reply(siren).type('application/vnd.siren+json')
         })
