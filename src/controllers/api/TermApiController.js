@@ -3,13 +3,8 @@ import Term from '../../models/Term'
 import Lazy from 'lazy.js'
 import Database from '../../database'
 
-var mock = [new Term(1, 'FMO', 'Field Marketing Organization', ['tag1', 'tag2']),
-               new Term(2, 'CMS', 'Center for Medicare and Medicaid Services'),
-               new Term(3, 'NIPR', 'National Insurance Producer Registry', ['tag1', 'tag3']),
-               new Term(4, 'NPN', 'National Producer Number', ['tag2', 'tag3']),
-               new Term(5, 'NAIC', 'National Association of Insurance Commissioners'), ['tag1', 'tag2', 'tag3']]
-
-export default class TermApiController extends ApiController {
+export
+default class TermApiController extends ApiController {
     constructor(router) {
         super(router, '/terms')
         this.get('/', this.index.bind(this));
@@ -29,12 +24,12 @@ export default class TermApiController extends ApiController {
     }
 
     new(request, reply) {
+        var term = new Term(request.payload.id, request.payload.term, request.payload.definition, request.payload.tags)
         this.database.add(
-            request.payload.term,
-            request.payload.tags,
-            request.payload.definition,
+            term,
             function (id) {
-                var siren = super.siren(new Term(id))
+                term.id = id
+                var siren = super.siren(term)
                 reply(siren).type('application/vnd.siren+json')
             })
     }
@@ -50,7 +45,6 @@ export default class TermApiController extends ApiController {
         var id = request.params.id
         var term = new Term(id, request.payload.term, request.payload.definition, request.payload.tags)
         this.database.update(
-            term, () => reply.redirect('/terms/' + id)
-        )
+            term, reply)
     }
 }

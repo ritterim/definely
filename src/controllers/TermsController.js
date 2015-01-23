@@ -43,32 +43,37 @@ default class TermsController extends Controller {
 
     create(request, reply) {
         var url = this.absoluteUrl('api/terms/new')
-        Request.postAsync({url:url, form:request.payload}).then(data => {
+        Request.postAsync({
+            url: url,
+            form: request.payload
+        }).then(data => {
             var term = super.siren(data[0].body)
             reply.redirect('/terms/' + term.id);
         })
     }
 
     edit(request, reply) {
-        var url = this.absoluteUrl('api/terms/' + request.params.id)
-        Request.getAsync(url).then(data => {
-            var term = super.siren(data[0].body)
-            term.tags = term.tags.join(' ')
+        this._show(request.params.id).then(term =>
             reply.view('terms/edit', {
                 title: 'Edit term',
                 term: term
-            })
-        })
+            }))
     }
 
     show(request, reply) {
-        var url = this.absoluteUrl('api/terms/' + request.params.id)
-        Request.getAsync(url).then(data => {
-            var term = super.siren(data[0].body)
+        this._show(request.params.id).then(term =>
             reply.view('terms/show', {
                 title: 'Show term',
                 term: term
-            })
+            }))
+    }
+
+    _show(id) {
+        var url = this.absoluteUrl('api/terms/' + id)
+        return Request.getAsync(url).then(data => {
+            var term = super.siren(data[0].body)
+            term.tags = term.tags.join(' ')
+            return term
         })
     }
 
@@ -83,7 +88,10 @@ default class TermsController extends Controller {
         var id = request.params.id
         var url = this.absoluteUrl('api/terms/' + id)
         Request
-            .putAsync({url:url, form:request.payload})
+            .putAsync({
+                url: url,
+                form: request.payload
+            })
             .then(() => reply.redirect('/terms/' + id))
     }
 }

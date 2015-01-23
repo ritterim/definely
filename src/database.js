@@ -14,6 +14,8 @@ default class Database {
                 done(client);
             }
 
+            console.log(term)
+            
             client.query('insert into terms (term, tags, definition) values ($1, $2, $3) returning id;', [term.term, term.tags.join(' '), term.definition], function (err, result) {
                 if (err) {
                     return console.error('Error running query', err);
