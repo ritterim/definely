@@ -1,32 +1,28 @@
+import Promise from 'bluebird'
 import pg from 'pg';
+Promise.promisifyAll(pg)
 import Term from './models/Term'
+
+
 
 export
 default class Database {
     constructor(connectionUri) {
-        this.connectionUri = connectionUri;
-    };
+        this.connectionUri = connectionUri
+    }
 
-    add(term, callback) {
-        pg.connect(this.connectionUri, function (err, client, done) {
-            if (err) {
-                return console.error('Could not connect to postgres', err);
-                done(client);
-            }
+    add(term) {
+        return this._connect(this.connectionUri).then(client =>
+            client.queryAsync('insert into terms (term, tags, definition) values ($1, $2, $3) returning id;', [term.term, term.tags.join(' '), term.definition])
+            .then(result => {
+                return result.rows[0].id
+            })
+        )
+    }
 
-            client.query('insert into terms (term, tags, definition) values ($1, $2, $3) returning id;', [term.term, term.tags.join(' '), term.definition], function (err, result) {
-                if (err) {
-                    return console.error('Error running query', err);
-                    done(client);
-                }
+    find(id) {
+        //        return this._connect(this.connectionUri).then(client => {
 
-                done();
-                callback(result.rows[0].id);
-            });
-        });
-    };
-
-    find(id, callback) {
         pg.connect(this.connectionUri, function (err, client, done) {
             if (err) {
                 return console.error('Could not connect to postgres', err);
@@ -110,4 +106,14 @@ default class Database {
             });
         });
     };
+
+    _connection(connectionString) {
+        var close;
+        return pg.connectAsync(connectionString).spread(function (client, done) {
+            close = done;
+            return client;
+        }).disposer(function (client) {
+            if (close) close(client);
+        }).error(err => console.log('Could not connect to postgres', err))
+    }
 }
