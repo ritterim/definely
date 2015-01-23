@@ -4,12 +4,15 @@ import registerControllers from './controllers/index'
 import _ from './extensions'
 import Lazy from 'lazy.js'
 import Handlebars from 'handlebars';
+import config from '../config'
 
 Handlebars.registerHelper("currentYear", function() {
     return new Date().getFullYear();
 });
 
-spawnServer('App', 3000, registerControllers, {
+console.log(config)
+
+spawnServer('App', config.port, registerControllers, {
     engines: {
         hbs: Handlebars
     },
@@ -20,7 +23,6 @@ spawnServer('App', 3000, registerControllers, {
 })
 
 function spawnServer(name, port, registerControllers, viewOptions) {
-
     var server = new Hapi.Server()
 
     server.connection({

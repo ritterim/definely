@@ -1,4 +1,3 @@
-module.exports = config
-
-var config = {
+module.exports = {
+    port: process.env.PORT || 3000
 }
