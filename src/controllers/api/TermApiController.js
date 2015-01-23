@@ -1,29 +1,50 @@
 import ApiController from './ApiController'
 import Term from '../../models/Term'
 import Lazy from 'lazy.js'
+import Database from '../../database'
 
-var mock = [new Term(1, 'FMO', 'Field Marketing Organization'),
-               new Term(2, 'CMS', 'Center for Medicare and Medicaid Services'),
-               new Term(3,  'NIPR', 'National Insurance Producer Registry'),
-               new Term(4,  'NPN', 'National Producer Number'),
-               new Term(5,  'NAIC', 'National Association of Insurance Commissioners')]
-
-export default class TermApiController extends ApiController {
+export
+default class TermApiController extends ApiController {
     constructor(router) {
         super(router, '/terms')
-        this.get('/', this.all)
-        this.get('/{id}', this.byId)
+        this.get('/', this.index.bind(this));
+        this.get('/{id}', this.show.bind(this));
+        this.post('/new', this.new.bind(this));
+        this.put('/{id}', this.update.bind(this));
+
+        this.database = new Database(process.env['DATABASE_URL']);
     }
 
-    all(request, reply) {
-        var siren = super.siren(mock)
-        reply(siren).type('application/vnd.siren+json')
+    index(request, reply) {
+        var searchTerm = request.url.query['search-term'];
+        this.database.search(searchTerm, function (terms) {
+            var siren = super.siren(terms)
+            reply(siren).type('application/vnd.siren+json')
+        })
     }
 
-    byId(request, reply) {
+    new(request, reply) {
+        var term = new Term(request.payload.id, request.payload.term, request.payload.definition, request.payload.tags)
+        this.database.add(
+            term,
+            function (id) {
+                term.id = id
+                var siren = super.siren(term)
+                reply(siren).type('application/vnd.siren+json')
+            })
+    }
+
+    show(request, reply) {
+        this.database.find(request.params.id, function (term) {
+            var siren = super.siren(term)
+            reply(siren).type('application/vnd.siren+json')
+        })
+    }
+
+    update(request, reply) {
         var id = request.params.id
-        var term = Lazy(mock).filter(e=>e.id == id).first()
-        var siren = super.siren(term)
-        return reply(siren).type('application/vnd.siren+json')
+        var term = new Term(id, request.payload.term, request.payload.definition, request.payload.tags)
+        this.database.update(
+            term, () => reply())
     }
 }

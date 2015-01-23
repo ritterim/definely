@@ -1,4 +1,5 @@
-import Errors from '../Errors'
+import chai from 'chai'
+var should = chai.should()
 import Lazy from 'lazy.js'
 import Path from 'path'
 import _ from '../extensions'
@@ -12,13 +13,13 @@ export default function Siren(resource, baseUrl = '') {
             return deepArray(object)
         else if (isObject(object))
             return entity(object)
-        throw Errors.typeArg('object', 'array|object')
+        
+        throw 'object must be either an array or object'
     }
 
     function entity(object, parentObject, parentProperty, parentRel) {
-        if (object === null)
-            throw Errors.nullArg('object')
-
+        object.should.not.be.null
+        
         var relValue = rel(object, parentRel)
         return {
             class: cls(object, parentProperty),
@@ -36,8 +37,8 @@ export default function Siren(resource, baseUrl = '') {
         publicMembers(object).each(({
             value, prop
         }) => {
-            if (!isValue(value)) {
-                if (isArray(value))
+            if (!isValue(value) && !isValueArray(value)) {
+                if (isObjectArray(value))
                     entities.push(shallowArray(value, object, prop, rel))
                 else if (isObject(value)) {
                     if (value != null)
@@ -56,8 +57,7 @@ export default function Siren(resource, baseUrl = '') {
 
     // All non-root collections should only store an href and not its resolved constituents
     function shallowArray(objects, parentObject, parentProperty, parentRel) {
-        if (!isArray(objects))
-            throw Errors.typeArg('objects', 'array')
+        objects.should.be.an('array')
         return {
             class: cls(objects, parentProperty),
             rel: rel(objects, parentRel),
@@ -66,8 +66,7 @@ export default function Siren(resource, baseUrl = '') {
     }
 
     function cls(object, parentProperty = '') {
-        if (object === null)
-            throw Errors.nullArg('object')
+        object.should.be.truthy
         var type = typeOf(object)
         parentProperty = parentProperty.trim()
         var cls = []
@@ -78,8 +77,7 @@ export default function Siren(resource, baseUrl = '') {
     }
 
     function rel(object, parentRel = null) {
-        if (object === null)
-            throw Errors.nullArg('object')
+        object.should.be.truthy
         var type = typeOf(object)
         var rel
         if (!parentRel)
@@ -95,7 +93,7 @@ export default function Siren(resource, baseUrl = '') {
         publicMembers(object).each(({
             value, prop
         }) => {
-            if (isValue(value))
+            if (isValue(value) || isValueArray(value))
                 props[prop] = value
         })
         return props
@@ -191,6 +189,15 @@ export default function Siren(resource, baseUrl = '') {
 
     function isArray(object) {
         return Array.isArray(object)
+    }
+    
+    // is the array an array of simple types?
+    function isValueArray(object) {
+        return Array.isArray(object) && Lazy(object).reduce((acc,next) => acc && isValue(next), true)
+    }
+    
+    function isObjectArray(object) {
+        return isArray(object) && !isValueArray(object)
     }
 
     function isFunction(object) {

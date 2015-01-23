@@ -1,8 +1,13 @@
 import Controller from './Controller'
 import pg from 'pg'
 import Database from '../database'
+import Promise from 'bluebird'
+import _request from 'request'
+var Request = Promise.promisifyAll(_request)
+import Lazy from 'lazy.js'
 
-export default class TermsController extends Controller {
+export
+default class TermsController extends Controller {
     constructor(router) {
         super(router, '/terms');
 
@@ -12,62 +17,65 @@ export default class TermsController extends Controller {
         this.get('/new', this.new);
         this.post('/new', this.create.bind(this));
         this.put('/{id}', this.update.bind(this));
-
-        this.database = new Database(process.env['DATABASE_URL']);
-    }
-
-    create(request, reply) {
-        this.database.add(
-            request.payload.term,
-            request.payload.tags,
-            request.payload.definition,
-            function(id) {
-                reply.redirect('/terms/' + id);
-            });
-    }
-
-    edit(request, reply) {
-        this.database.find(request.params.id, function(term) {
-            reply.view('terms/edit', {
-                title: 'Edit term',
-                term: term
-            });
-        });
     }
 
     index(request, reply) {
-        var searchTerm = request.url.query['search-term'];
-        var title = searchTerm == null ? 'Terms' : 'Search results for: ' + searchTerm;
-
-        this.database.search(searchTerm, function(dbResponse) {
-            if (dbResponse.rows.length === 1) {
-                reply.redirect('/terms/' + dbResponse.rows[0].id);
-            }
+        var searchTerm = request.url.query['search-term']
+        var url = this.absoluteUrl('api/terms?' + (searchTerm ? 'search-term=' + searchTerm : ''))
+        Request.getAsync(url).then(data => {
+            var terms = super.siren(data[0].body)
+            if (terms.length === 1)
+                reply.redirect('/terms/' + terms[0].id)
             else {
-                for (var i = 0; i < dbResponse.rows.length; i++) {
-                    var rank = dbResponse.rows[i].rank;
-                    var rankClass = 'text-danger';
-
-                    if (rank >= 0.8) {
-                        rankClass ='text-success';
-                    }
-                    else if (rank >= 0.5) {
-                        rankClass = 'text-warning';
-                    }
-                    else if (rank >= 0.1) {
-                        rankClass = 'text-info';
-                    }
-
-                    dbResponse.rows[i].rankClass = rankClass;
-                }
-
+                Lazy(terms).each(t => {
+                    t.rankClass = t.rank >= .8 ? 'text-success' : t.rank >= .5 ? 'text-warning' : t.rank >= .1 ? 'text-info' : 'text-danger'
+                    t.tags = t.tags.join(' ')
+                })
+                var title = searchTerm == null ? 'Terms' : 'Search results for: ' + searchTerm;
                 reply.view('terms/index', {
                     searchTerm: searchTerm,
                     title: title,
-                    terms: dbResponse.rows
-                });
+                    terms: terms
+                })
             }
-        });
+        })
+    }
+
+    create(request, reply) {
+        var url = this.absoluteUrl('api/terms/new')
+        Request.postAsync({
+            url: url,
+            form: request.payload
+        }).then(data => {
+            var term = super.siren(data[0].body)
+            reply.redirect('/terms/' + term.id);
+        })
+    }
+
+    edit(request, reply) {
+        this._show(request.params.id).then(term => {
+            reply.view('terms/edit', {
+                title: 'Edit term',
+                term: term
+            })
+        })
+    }
+
+    show(request, reply) {
+        this._show(request.params.id).then(term =>
+            reply.view('terms/show', {
+                title: 'Show term',
+                term: term
+            }))
+    }
+
+    _show(id) {
+        var url = this.absoluteUrl('api/terms/' + id)
+        return Request.getAsync(url).then(data => {
+            var term = super.siren(data[0].body)
+            term.tags = term.tags.join(' ')
+            return term
+        })
     }
 
     new(request, reply) {
@@ -77,25 +85,14 @@ export default class TermsController extends Controller {
         });
     }
 
-    show(request, reply) {
-        this.database.find(request.params.id, function(term) {
-            reply.view('terms/show', {
-                title: 'Show term',
-                term: term
-            });
-        });
-    }
-
     update(request, reply) {
-        var id = request.params.id;
-
-        this.database.update(
-            id,
-            request.payload.term,
-            request.payload.tags,
-            request.payload.definition,
-            function() {
-                reply.redirect('/terms/' + id);
-            });
+        var id = request.params.id
+        var url = this.absoluteUrl('api/terms/' + id)
+        Request
+            .putAsync({
+                url: url,
+                form: request.payload
+            })
+            .then(() => reply.redirect('/terms/' + id))
     }
 }

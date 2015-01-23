@@ -9,8 +9,8 @@ export default class ApiController extends Controller {
     }
 
     siren(entity) {
-        //var url = super.absoluteUrl.bind(this, url)()
-        var url = 'https://localhost:3000/api'
+        var url = this.absoluteUrl('api') //.bind(this, url)()
+        //var url = 'https://localhost:3000/api'
         var siren = new Siren(entity, url)
         return siren.json
     }

@@ -12,3 +12,7 @@ This project is intended to allow the creation of words and abbreviations and co
  - `terms` and `definitions` (1:*)
  - `terms` represent both words (ex. 'balloon') and abbreviations (ex. 'bal.' or 'bal').
  - while each term can connect to a definition, a term can also link to another term.
+ 
+## Siren API
+- The app exposes a siren hypermedia api at /api/terms and /api/terms/:id.
+- To facilitating browsing the api, see http://siren-browser.herokuapp.com/

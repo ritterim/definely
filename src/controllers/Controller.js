@@ -1,7 +1,14 @@
+import SirenClient from '../siren/SirenClient'
+
 export default class Controller {
     constructor(router, baseUrl = '') {
         this.router = router
         this.baseUrl = baseUrl
+    }
+
+    siren(json) {
+        var siren = new SirenClient(json)
+        return siren.view
     }
 
     get(relativeUrl, handler, name = null) {
@@ -47,10 +54,7 @@ export default class Controller {
     }
 
     absoluteUrl(relativeUrl='') {
-        console.log('asdf')
-//        console.log(this.router)
-//        console.log(this.router.info.uri)
-//        console.log(url())
-        return (this.router.info.uri + "/" + this.url(relativeUrl)).normalize()
+        var url = this.router.info.uri.trimEnd('/') + ("/" + relativeUrl).normalize('/')
+        return url
     }
 }
