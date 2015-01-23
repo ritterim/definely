@@ -27,13 +27,15 @@ default class TermsController extends Controller {
             if (terms.length === 1)
                 reply.redirect('/terms/' + terms[0].id)
             else {
-                Lazy(terms).each(t => {
-                    t.rankClass = t.rank >= .8 ? 'text-success' : t.rank >= .5 ? 'text-warning' : t.rank >= .1 ? 'text-info' : 'text-danger'
-                    t.tags = t.tags.join(' ')
-                })
+                var terms = Lazy(terms).sortBy(term => !searchTerm ? term.term : term.rank)
+                    .map(t => {
+                        t.rankClass = !searchTerm || t.rank >= .8 ? 'text-success' : t.rank >= .5 ? 'text-warning' : t.rank >= .1 ? 'text-info' : 'text-danger'
+                        t.tags = t.tags.join(' ')
+                        return t
+                    }).toArray()
                 var title = searchTerm == null ? 'Terms' : 'Search results for: ' + searchTerm;
                 reply.view('terms/index', {
-                    searchTerm: searchTerm,
+                    searchTerm: searchTerm || '*',
                     title: title,
                     terms: terms
                 })
