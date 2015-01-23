@@ -10,6 +10,8 @@ Handlebars.registerHelper("currentYear", function() {
     return new Date().getFullYear();
 });
 
+console.log(config)
+
 spawnServer('App', config.port, registerControllers, {
     engines: {
         hbs: Handlebars
@@ -21,7 +23,6 @@ spawnServer('App', config.port, registerControllers, {
 })
 
 function spawnServer(name, port, registerControllers, viewOptions) {
-
     var server = new Hapi.Server()
 
     server.connection({
