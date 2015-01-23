@@ -1,4 +1,5 @@
 import pg from 'pg';
+import Term from './models/Term';
 
 export default class Database{
     constructor(connectionUri){
@@ -11,7 +12,7 @@ export default class Database{
                 return console.error('Could not connect to postgres', err);
                 done(client);
             }
-
+            
             client.query('insert into terms (term, tags, definition) values ($1, $2, $3) returning id;', [ term, tags, definition ], function(err, result) {
                 if(err) {
                     return console.error('Error running query', err);
@@ -30,7 +31,6 @@ export default class Database{
                 return console.error('Could not connect to postgres', err);
                 done(client);
             }
-
             client.query('select id, term, tags, definition from terms where id = $1;', [ id ],
                               function(err, result) {
                                   if(err) {
@@ -39,7 +39,8 @@ export default class Database{
                                   }
 
                                   done();
-                                  callback(result.rows[0]);
+                                  var term = new Term(result.rows[0].id, result.rows[0].term, result.rows[0].definition, result.rows[0].tags.join([separator = ',']) || []);
+                                  callback(term);
                               });
         });
     };
@@ -80,7 +81,15 @@ export default class Database{
                 }
 
                 done();
-                callback(result);
+                result.rows.forEach(function(element){
+                                    element = new Term();
+                                    element.id = id;
+                                    element.term = term;
+                                    element.tags = tags.join([separator = ',']);
+                                    element.definition = definition;
+                                  });
+                
+                callback(result.rows);
             });
         });
     };
