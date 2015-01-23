@@ -13,8 +13,6 @@ default class Database {
                 return console.error('Could not connect to postgres', err);
                 done(client);
             }
-
-            console.log(term)
             
             client.query('insert into terms (term, tags, definition) values ($1, $2, $3) returning id;', [term.term, term.tags.join(' '), term.definition], function (err, result) {
                 if (err) {
@@ -54,7 +52,6 @@ default class Database {
         });
     };
 
-    // returns {term, rank}
     search(searchTerm, callback) {
         pg.connect(this.connectionUri, function (err, client, done) {
             if (err) {
