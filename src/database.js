@@ -76,10 +76,8 @@ default class Database {
                         }
 
                         done();
-                        var terms = result.rows.map(function (element) {
-                            var term = new Term(element.id, element.term, element.definition);
-                            callback(terms);
-                        });
+                        var terms = result.rows.map(row => new Term(row.id, row.term, row.definition, row.tags || undefined))
+                        callback(terms);
                     })
             }
         })
