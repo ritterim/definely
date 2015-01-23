@@ -27,6 +27,7 @@
   "homepage": "https://github.com/ritterim/definely",
   "dependencies": {
     "bluebird": "^2.6.4",
+    "chai": "~1.10.0",
     "co": "^4.1.0",
     "gulp": "^3.8.10",
     "gulp-clean": "^0.3.1",
@@ -44,7 +45,6 @@
   },
   "devDependencies": {
     "node-inspector": "^0.8.3",
-    "chai": "~1.10.0",
     "sinon": "~1.12.2",
     "mocha-sinon": "~1.1.4",
     "gulp-mocha": "~2.0.0"
