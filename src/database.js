@@ -88,7 +88,7 @@ default class Database {
                 return console.error('Could not connect to postgres', err);
                 done(client);
             }
-            client.query('update terms set term = $1, tags = $2, definition = $3 where id = $4;', [term.term, term.tags, term.definition, term.id], function (err, result) {
+            client.query('update terms set term = $1, tags = $2, definition = $3 where id = $4;', [term.term, term.tags.join(' '), term.definition, term.id], function (err, result) {
                 if (err) {
                     return console.error('Error running query', err);
                     done(client);

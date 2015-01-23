@@ -53,11 +53,12 @@ default class TermsController extends Controller {
     }
 
     edit(request, reply) {
-        this._show(request.params.id).then(term =>
+        this._show(request.params.id).then(term => {
             reply.view('terms/edit', {
                 title: 'Edit term',
                 term: term
-            }))
+            })
+        })
     }
 
     show(request, reply) {

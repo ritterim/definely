@@ -45,6 +45,6 @@ default class TermApiController extends ApiController {
         var id = request.params.id
         var term = new Term(id, request.payload.term, request.payload.definition, request.payload.tags)
         this.database.update(
-            term, reply)
+            term, () => reply())
     }
 }
