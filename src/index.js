@@ -4,12 +4,13 @@ import registerControllers from './controllers/index'
 import _ from './extensions'
 import Lazy from 'lazy.js'
 import Handlebars from 'handlebars';
+import config from '../config'
 
 Handlebars.registerHelper("currentYear", function() {
     return new Date().getFullYear();
 });
 
-spawnServer('App', 3000, registerControllers, {
+spawnServer('App', config.port, registerControllers, {
     engines: {
         hbs: Handlebars
     },
