@@ -14,8 +14,6 @@ default class Database {
                 done(client);
             }
 
-            console.log(term)
-            
             client.query('insert into terms (term, tags, definition) values ($1, $2, $3) returning id;', [term.term, term.tags.join(' '), term.definition], function (err, result) {
                 if (err) {
                     return console.error('Error running query', err);
@@ -41,20 +39,18 @@ default class Database {
                         return console.error('Error running query', err);
                         done(client);
                     }
-                    
+
                     done();
                     var term = null
-                    if (result.rows.length > 0)
-                    {
+                    if (result.rows.length > 0) {
                         var row = result.rows[0]
-                        term = new Term(row.id, row.term, row.definition, row.tags||undefined)
+                        term = new Term(row.id, row.term, row.definition, row.tags || undefined)
                     }
                     callback(term);
                 });
         });
     };
 
-    // returns {term, rank}
     search(searchTerm, callback) {
         pg.connect(this.connectionUri, function (err, client, done) {
             if (err) {
@@ -62,25 +58,32 @@ default class Database {
                 done(client);
             }
 
-            searchTerm = searchTerm.replace(/\s+/g, ' | ');
 
-            client.query('select id, term, tags, definition, rank from terms, to_tsquery($1) as query, ts_rank_cd(weightedVector, query) as rank where weightedVector @@ query order by rank desc;', [searchTerm],
-                function (err, result) {
-                    if (err) {
-                        return console.error('Error running query', err);
-                        done(client);
-                    }
+            searchTerm = (searchTerm || '').trim().replace(/\s+/g, ' | ');
 
-                    done();
-                    var terms = result.rows.map(function (element) {
-                        var term = new Term(element.id, element.term, element.definition)
-                        term.rank = element.rank
-                        return term
-                    });
-                    callback(terms);
-                });
-        });
-    };
+            if (!searchTerm) {
+                client.query('select id, term, tags, definition from terms', function (err, result) {
+
+                    var terms = result.rows.map(row => new Term(row.id, row.term, row.definition, row.tags || undefined))
+                    callback(terms)
+                })
+            } else {
+                client.query('select id, term, tags, definition, rank from terms, to_tsquery($1) as query, ts_rank_cd(weightedVector, query) as rank where weightedVector @@ query order by rank desc;', [searchTerm],
+                    function (err, result) {
+                        if (err) {
+                            return console.error('Error running query', err);
+                            done(client);
+                        }
+
+                        done();
+                        var terms = result.rows.map(function (element) {
+                            var term = new Term(element.id, element.term, element.definition);
+                            callback(terms);
+                        });
+                    })
+            }
+        })
+    }
 
     update(term, callback) {
         pg.connect(this.connectionUri, function (err, client, done) {
