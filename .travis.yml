@@ -11,5 +11,4 @@ deploy:
   app:
     master: ritterim-definely
   run:
-    - "npm install"
     - "./node_modules/.bin/pg-migrate up"
