@@ -1,10 +1,12 @@
 import pg from 'pg';
 import Term from './models/Term'
+import Sanitize from './sanitize'
 
 export
 default class Database {
     constructor(connectionUri) {
         this.connectionUri = connectionUri;
+        this.sanitize = new Sanitize();
     };
 
     add(term, callback) {
@@ -27,6 +29,8 @@ default class Database {
     };
 
     find(id, callback) {
+        var self = this;
+
         pg.connect(this.connectionUri, function (err, client, done) {
             if (err) {
                 return console.error('Could not connect to postgres', err);
@@ -44,7 +48,7 @@ default class Database {
                     var term = null
                     if (result.rows.length > 0) {
                         var row = result.rows[0]
-                        term = new Term(row.id, row.term, row.definition, row.tags || undefined)
+                        term = new Term(row.id, row.term, self.sanitize.htmlSanitize(row.definition), row.tags || undefined)
                     }
                     callback(term);
                 });
@@ -52,6 +56,8 @@ default class Database {
     };
 
     search(searchTerm, callback) {
+        var self = this;
+
         pg.connect(this.connectionUri, function (err, client, done) {
             if (err) {
                 return console.error('Could not connect to postgres', err);
@@ -64,7 +70,7 @@ default class Database {
             if (!searchTerm) {
                 client.query('select id, term, tags, definition from terms', function (err, result) {
 
-                    var terms = result.rows.map(row => new Term(row.id, row.term, row.definition, row.tags || undefined))
+                    var terms = result.rows.map(row => new Term(row.id, row.term, self.sanitize.htmlSanitize(row.definition), row.tags || undefined))
                     callback(terms)
                 })
             } else {
@@ -76,7 +82,7 @@ default class Database {
                         }
 
                         done();
-                        var terms = result.rows.map(row => new Term(row.id, row.term, row.definition, row.tags || undefined))
+                        var terms = result.rows.map(row => new Term(row.id, row.term, self.sanitize.htmlSanitize(row.definition), row.tags || undefined))
                         callback(terms);
                     })
             }
