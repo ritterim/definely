@@ -4,17 +4,7 @@ var $ = require('gulp-load-plugins')({
     lazy: true
 });
 
-
 gulp.task('default', ['serve-dev'])
-
-gulp.task('test', ['build'], function () {
-    return gulp.src('build/**/*Spec.js', {
-            read: false
-        })
-        .pipe($.mocha({
-            reporter: 'nyan'
-        }))
-})
 
 gulp.task('serve-dev', ['build'], function () {
     serve(true)
@@ -42,11 +32,19 @@ gulp.task('build', ['clean'], function () {
         .pipe(gulp.dest('build'))
 })
 
-gulp.task('test', ['build'], function () {
+gulp.task('test', ['build', 'tdd-tests'], function () {
     return gulp.src('build/**/*Spec.js', {
             read: false
         })
         .pipe($.mocha())
+})
+
+gulp.task('tdd-tests', ['build'], function() {
+    return gulp.src('build/**/*Tests.js', {
+        read: false
+    }).pipe($.mocha({
+        ui: 'tdd'
+    }));
 })
 
 function serve(isDev) {
