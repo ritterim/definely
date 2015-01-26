@@ -5,12 +5,12 @@ import _ from './extensions'
 import Lazy from 'lazy.js'
 import Handlebars from 'handlebars';
 import config from '../config'
-
-Handlebars.registerHelper("currentYear", function() {
-    return new Date().getFullYear();
-});
+import HandlebarsHelpers from './handlebars-helpers'
 
 console.log(config)
+
+// We want to register any app.-related helpers which can be called from associated views.
+new HandlebarsHelpers(Handlebars).register();
 
 spawnServer('App', config.port, registerControllers, {
     engines: {
