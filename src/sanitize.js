@@ -6,7 +6,7 @@ export default class Sanitize {
      * This function replaces all instances of lt and gt with their
      * HTML entity.
      */
-    htmlSanitize(html) {
+    sanitizeHtml(html) {
         html = html.replace(/</g, '&lt;');
         html = html.replace(/>/g, '&gt;');
 
