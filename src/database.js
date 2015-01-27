@@ -75,7 +75,18 @@ default class Database {
                         }
 
                         done();
-                        var terms = result.rows.map(row => new Term(row.id, row.term, row.definition, row.tags || undefined))
+                        var terms = result.rows.map(row => {
+                            var term = new Term(row.id, row.term, row.definition, row.tags || undefined);
+
+                            /**
+                             * This property is dynamically added since it's specific
+                             * to this function and not part of the model.
+                             */
+                            term.rank = row.rank;
+
+                            return term;
+                        });
+
                         callback(terms);
                     })
             }

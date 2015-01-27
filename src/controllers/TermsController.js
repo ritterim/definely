@@ -27,9 +27,16 @@ default class TermsController extends Controller {
             if (terms.length === 1)
                 reply.redirect('/terms/' + terms[0].id)
             else {
-                var terms = Lazy(terms).sortBy(term => !searchTerm ? term.term : term.rank)
+                /**
+                 * Sorting is determined based on whether we have a search term.
+                 * With no search term, we will sort by `term.term` in ascending order.
+                 * With a search term, we will sort by `term.rank` in descending order.
+                 * This latter behavior is because higher ranking-values indicate
+                 * closer matches to the search term.
+                 */
+                var terms = Lazy(terms).sortBy(term => !searchTerm ? term.term : term.rank, !searchTerm ? false : true)
                     .map(t => {
-                        t.rankClass = !searchTerm || t.rank >= .8 ? 'text-success' : t.rank >= .5 ? 'text-warning' : t.rank >= .1 ? 'text-info' : 'text-danger'
+                        t.rankClass = !searchTerm || t.rank >= .8 ? 'text-success' : (t.rank >= .5 ? 'text-warning' : (t.rank >= .1 ? 'text-info' : 'text-danger'))
                         t.tags = t.tags.join(' ')
                         return t
                     }).toArray()
