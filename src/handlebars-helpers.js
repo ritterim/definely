@@ -13,6 +13,7 @@ export default class HandlebarsHelpers {
         this.registerCurrentYear(this.handlebars);
         this.registerSanitizeHtml(this.handlebars);
         this.registerMarked(this.handlebars);
+        this.registerAddEllipsis(this.handlebars);
     }
 
     /**
@@ -41,6 +42,27 @@ export default class HandlebarsHelpers {
     registerMarked(handlebars) {
         handlebars.registerHelper('marked', function(input) {
             return marked(input);
+        });
+    }
+
+    /**
+     * Registers a helper for surrounding input with ellipsis
+     * depending on conditions of first and last-characters.
+     */
+    registerAddEllipsis(handlebars) {
+        handlebars.registerHelper('addEllipsis', function(input) {
+            var firstCharacter = input.charAt(0);
+            var lastCharacter = input.charAt(input.lenth - 1);
+
+            if (firstCharacter !== firstCharacter.toUpperCase()) {
+                input = '&hellip;' + input;
+            }
+
+            if (lastCharacter !== '.') {
+                input = input + '&hellip;';
+            }
+
+            return input;
         });
     }
 }

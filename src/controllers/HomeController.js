@@ -7,6 +7,9 @@ export default class HomeController extends Controller {
     }
 
     index(request, reply) {
-        reply.view('index')
+        // This is a special view and should not have a layout.
+        reply.view('index', {}, {
+            layout: false
+        })
     }
 }

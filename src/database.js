@@ -67,7 +67,7 @@ default class Database {
                     callback(terms)
                 })
             } else {
-                client.query('select id, term, tags, definition, rank from terms, to_tsquery($1) as query, ts_rank_cd(weightedVector, query) as rank where weightedVector @@ query order by rank desc;', [searchTerm],
+                client.query('select id, term, tags, definition, rank, ts_headline(definition, query) as highlight_definition from terms, to_tsquery($1) as query, ts_rank_cd(weightedVector, query) as rank where weightedVector @@ query order by rank desc;', [searchTerm],
                     function (err, result) {
                         if (err) {
                             return console.error('Error running query', err);
@@ -83,6 +83,7 @@ default class Database {
                              * to this function and not part of the model.
                              */
                             term.rank = row.rank;
+                            term.highlightDefinition = row.highlight_definition;
 
                             return term;
                         });
