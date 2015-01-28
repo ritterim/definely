@@ -36,7 +36,6 @@ default class TermsController extends Controller {
                  */
                 var terms = Lazy(terms).sortBy(term => !searchTerm ? term.term : term.rank, !searchTerm ? false : true)
                     .map(t => {
-                        t.rankClass = !searchTerm || t.rank >= .8 ? 'text-success' : (t.rank >= .5 ? 'text-warning' : (t.rank >= .1 ? 'text-info' : 'text-danger'))
                         t.tags = t.tags.join(' ')
                         return t
                     }).toArray()
