@@ -42,11 +42,9 @@ default class Database {
                         .then(result =>
                             result.rows.map(row => {
                                 var term = new Term(row.id, row.term, row.definition, row.tags || undefined)
-                                
-                            /**
-                             * This property is dynamically added since it's specific
-                             * to this function and not part of the model.
-                             */
+
+                                // This property is dynamically added since it's specific
+                                // to this function and not part of the model.
                                 term.rank = row.rank
                                 term.highlightDefinition = row.highlight_definition
                                 return term
