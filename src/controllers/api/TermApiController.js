@@ -17,17 +17,17 @@ default class TermApiController extends ApiController {
 
     index(request, reply) {
         var searchTerm = request.url.query['search-term'];
-        this.database.search(searchTerm, function (terms) {
-            var siren = super.siren(terms)
-            reply(siren).type('application/vnd.siren+json')
-        })
+        this.database.search(searchTerm)
+            .then(terms => {
+                var siren = super.siren(terms)
+                reply(siren).type('application/vnd.siren+json')
+            })
     }
 
     new(request, reply) {
         var term = new Term(request.payload.id, request.payload.term, request.payload.definition, request.payload.tags)
-        this.database.add(
-            term,
-            function (id) {
+        this.database.add(term)
+            .then(id => {
                 term.id = id
                 var siren = super.siren(term)
                 reply(siren).type('application/vnd.siren+json')
@@ -35,16 +35,16 @@ default class TermApiController extends ApiController {
     }
 
     show(request, reply) {
-        this.database.find(request.params.id, function (term) {
-            var siren = super.siren(term)
-            reply(siren).type('application/vnd.siren+json')
-        })
+        this.database.find(request.params.id)
+            .then(term => {
+                var siren = super.siren(term)
+                reply(siren).type('application/vnd.siren+json')
+            })
     }
 
     update(request, reply) {
         var id = request.params.id
         var term = new Term(id, request.payload.term, request.payload.definition, request.payload.tags)
-        this.database.update(
-            term, () => reply())
+        this.database.update(term).then(() => reply())
     }
 }

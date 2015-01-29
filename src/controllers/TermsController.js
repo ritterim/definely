@@ -2,8 +2,8 @@ import Controller from './Controller'
 import pg from 'pg'
 import Database from '../database'
 import Promise from 'bluebird'
-import _request from 'request'
-var Request = Promise.promisifyAll(_request)
+import _http from 'request'
+var http = Promise.promisifyAll(_http)
 import Lazy from 'lazy.js'
 
 export
@@ -22,7 +22,7 @@ default class TermsController extends Controller {
     index(request, reply) {
         var searchTerm = request.url.query['search-term']
         var url = this.absoluteUrl('api/terms?' + (searchTerm ? 'search-term=' + searchTerm : ''))
-        Request.getAsync(url).then(data => {
+        http.getAsync(url).then(data => {
             var terms = super.siren(data[0].body)
             if (terms.length === 1)
                 reply.redirect('/terms/' + terms[0].id)
@@ -51,7 +51,7 @@ default class TermsController extends Controller {
 
     create(request, reply) {
         var url = this.absoluteUrl('api/terms/new')
-        Request.postAsync({
+        http.postAsync({
             url: url,
             form: request.payload
         }).then(data => {
@@ -79,7 +79,7 @@ default class TermsController extends Controller {
 
     _show(id) {
         var url = this.absoluteUrl('api/terms/' + id)
-        return Request.getAsync(url).then(data => {
+        return http.getAsync(url).then(data => {
             var term = super.siren(data[0].body)
             term.tags = term.tags.join(' ')
             return term
@@ -96,7 +96,7 @@ default class TermsController extends Controller {
     update(request, reply) {
         var id = request.params.id
         var url = this.absoluteUrl('api/terms/' + id)
-        Request
+        http
             .putAsync({
                 url: url,
                 form: request.payload
