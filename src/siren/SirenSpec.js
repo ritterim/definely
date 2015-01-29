@@ -3,7 +3,7 @@ var should = chai.should()
 import {
     Get, Post, Put, Patch, Delete
 }
-from './attributes'
+from '../attributes'
 
 import Term from '../models/Term'
 
@@ -78,7 +78,7 @@ describe('siren:', () => {
             siren.root.properties.num2.should.equal(-1)
             siren.root.properties.real2.should.equal(-1.2)
         })
-        
+
         it('may contain array of simple types', () => {
             function Entity() {
                 this.array = ['string', 1, 1.2, -1, -1.2]
@@ -176,7 +176,7 @@ describe('siren:', () => {
             }
             function Complex() {}
             function Complex2() {}
-            
+
             var entity = new Entity()
             var siren = new Siren(entity)
             siren.root.entities.length.should.equal(3)
@@ -350,7 +350,7 @@ describe('siren:', () => {
 
                 @Get('url2')
                 function Entity2() {
-                    this.subEntity = new SubEntity2() 
+                    this.subEntity = new SubEntity2()
                 }
                 function SubEntity2() {}
                 var entity2 = new Entity2()
@@ -432,7 +432,7 @@ describe('siren:', () => {
            var entity = new Entity()
            var siren = new Siren(entity)
            siren.root.actions.length.should.equal(1)
-           var fields = siren.root.actions[0].fields 
+           var fields = siren.root.actions[0].fields
            fields.length.should.equal(4)
            fields[0].name.should.equal('a')
            fields[1].name.should.equal('b')

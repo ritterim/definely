@@ -1,7 +1,7 @@
 import {
     Get, Post, Put, Patch, Delete
 }
-from '../siren/attributes'
+from '../attributes'
 
 @Get('terms/:id')
 export default class Term {
