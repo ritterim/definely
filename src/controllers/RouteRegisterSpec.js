@@ -94,6 +94,36 @@ describe('RouteRegister:', () => {
             registration.routes[4].path.should.equal('deleteUrl')
         })
 
+        it('urls are appended to any controller route prefixes', () => {
+            var registration = new Registration()
+            var register = new RouteRegister(registration.handler)
+            @Get('baseUrl')
+            class Controller {
+                @Get('getUrl')
+                getMethod() {
+                }
+                @Post('postUrl')
+                postMethod() {
+                }
+                @Put('putUrl')
+                putMethod() {
+                }
+                @Patch('patchUrl')
+                patchMethod() {
+                }
+                @Delete('deleteUrl')
+                deleteMethod() {
+                }
+            }
+            register.register(Controller)
+            registration.routes.length.should.equal(5)
+            registration.routes[0].path.should.equal('baseUrl/getUrl')
+            registration.routes[1].path.should.equal('baseUrl/postUrl')
+            registration.routes[2].path.should.equal('baseUrl/putUrl')
+            registration.routes[3].path.should.equal('baseUrl/patchUrl')
+            registration.routes[4].path.should.equal('baseUrl/deleteUrl')
+        })
+
         it('extracts method from all methods decorated with Put, Get, Post, Patch, Delete attributes', () => {
             var registration = new Registration()
             var register = new RouteRegister(registration.handler)
