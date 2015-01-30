@@ -36,8 +36,8 @@ default class RouteRegister {
                 this.controllers.push(c)
                 var parms = {}
                 var cAnnos = c.constructor.annotations
-                var baseUrl = cAnnos && cAnnos.length>0 && cAnnos[0].constructor.name.match(/get|post|put|patch|delete/i) ? cAnnos[0].url : ''
-                parms.path = baseUrl ? (baseUrl + '/' + anno.url).normalize() : anno.url
+                var baseUrl = cAnnos && cAnnos.length>0 && cAnnos[0].constructor.name.match(/get|post|put|patch|delete/i) ? (cAnnos[0].url||'') : ''
+                parms.path = this.url(baseUrl,anno.url)
                 var annoType = anno.constructor.name
                 parms.method = annoType.match(/get/i) ? 'GET' : annoType.match(/post/i) ? 'POST' : annoType.match(/put/i) ? 'PUT' : annoType.match(/patch/i) ? 'PATCH' : annoType.match(/delete/i) ? 'DELETE' : 'UNKNOWN'
                 parms.handler = func.bind(c)
@@ -46,6 +46,13 @@ default class RouteRegister {
                 return parms;
             })
             .each(this._register)
+    }
+
+    url(base, relative) {
+        var url = ('/' + base + '/' + relative).normalize('/')
+        if (url != '/')
+            url = url.trimEnd('/')
+        return url
     }
 
     static hapi(server) {

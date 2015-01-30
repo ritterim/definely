@@ -78,20 +78,20 @@ describe('RouteRegister:', () => {
                 getMethod() { }
                 @Post('postUrl')
                 postMethod() { }
-                @Put('putUrl')
+                @Put('/putUrl')
                 putMethod() { }
-                @Patch('patchUrl')
+                @Patch('//patchUrl')
                 patchMethod() { }
-                @Delete('deleteUrl')
+                @Delete('///deleteUrl')
                 deleteMethod() { }
             }
             register.register(Controller)
             registration.routes.length.should.equal(5)
-            registration.routes[0].path.should.equal('getUrl')
-            registration.routes[1].path.should.equal('postUrl')
-            registration.routes[2].path.should.equal('putUrl')
-            registration.routes[3].path.should.equal('patchUrl')
-            registration.routes[4].path.should.equal('deleteUrl')
+            registration.routes[0].path.should.equal('/getUrl')
+            registration.routes[1].path.should.equal('/postUrl')
+            registration.routes[2].path.should.equal('/putUrl')
+            registration.routes[3].path.should.equal('/patchUrl')
+            registration.routes[4].path.should.equal('/deleteUrl')
         })
 
         it('urls are appended to any controller route prefixes', () => {
@@ -105,23 +105,23 @@ describe('RouteRegister:', () => {
                 @Post('postUrl')
                 postMethod() {
                 }
-                @Put('putUrl')
+                @Put('/putUrl')
                 putMethod() {
                 }
-                @Patch('patchUrl')
+                @Patch('//patchUrl')
                 patchMethod() {
                 }
-                @Delete('deleteUrl')
+                @Delete('///deleteUrl')
                 deleteMethod() {
                 }
             }
             register.register(Controller)
             registration.routes.length.should.equal(5)
-            registration.routes[0].path.should.equal('baseUrl/getUrl')
-            registration.routes[1].path.should.equal('baseUrl/postUrl')
-            registration.routes[2].path.should.equal('baseUrl/putUrl')
-            registration.routes[3].path.should.equal('baseUrl/patchUrl')
-            registration.routes[4].path.should.equal('baseUrl/deleteUrl')
+            registration.routes[0].path.should.equal('/baseUrl/getUrl')
+            registration.routes[1].path.should.equal('/baseUrl/postUrl')
+            registration.routes[2].path.should.equal('/baseUrl/putUrl')
+            registration.routes[3].path.should.equal('/baseUrl/patchUrl')
+            registration.routes[4].path.should.equal('/baseUrl/deleteUrl')
         })
 
         it('extracts method from all methods decorated with Put, Get, Post, Patch, Delete attributes', () => {
