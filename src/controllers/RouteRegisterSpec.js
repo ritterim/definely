@@ -51,7 +51,7 @@ describe('RouteRegister:', () => {
             var register = new RouteRegister(registration.handler)
             class Controller {
                 @Get()
-                getMethod() { return 'asdf'}
+                getMethod() { }
                 @Post()
                 postMethod() { }
                 @Put()
@@ -85,7 +85,7 @@ describe('RouteRegister:', () => {
                 @Delete('deleteUrl')
                 deleteMethod() { }
             }
-            register.register(new Controller())
+            register.register(Controller)
             registration.routes.length.should.equal(5)
             registration.routes[0].path.should.equal('getUrl')
             registration.routes[1].path.should.equal('postUrl')
@@ -119,7 +119,7 @@ describe('RouteRegister:', () => {
                     return 'return delete'
                 }
             }
-            register.register(new Controller())
+            register.register(Controller)
             registration.routes.length.should.equal(5)
             registration.routes[0].handler().should.equal('return get')
             registration.routes[1].handler().should.equal('return post')
@@ -132,7 +132,7 @@ describe('RouteRegister:', () => {
             var registration = new Registration()
             var register = new RouteRegister(registration.handler)
             class Controller {
-                @Get('getUrl', 'name')
+                @Get('getUrl', 'name1')
                 getMethod() {
                 }
                 @Post('postUrl')
@@ -148,13 +148,13 @@ describe('RouteRegister:', () => {
                 deleteMethod() {
                 }
             }
-            register.register(new Controller())
+            register.register(Controller)
             registration.routes.length.should.equal(5)
-            registration.routes[0].config.id.should.equal('name')
-            registration.routes[1].config.should.not.have.property('id')
-            registration.routes[2].config.id.should.equal('name2')
-            registration.routes[3].config.should.not.have.property('id')
-            registration.routes[4].config.id.should.equal('name3')
+            registration.routes[0].name.should.equal('name1')
+            should.not.exist(registration.routes[1].name)
+            registration.routes[2].name.should.equal('name2')
+            should.not.exist(registration.routes[3].name)
+            registration.routes[4].name.should.equal('name3')
         })
     })
 })

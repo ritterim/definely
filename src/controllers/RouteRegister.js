@@ -20,23 +20,27 @@ default class RouteRegister {
 
     register(...controllers) {
         Lazy(controllers)
+            .map(c => new c())
             .map(c =>
-                 Object.keys(c)
-                 .filter(key => (typeof c[key]) == 'function' && c[key].annotations.match(/get|post|put|patch|delete/i))
-                 .map(key => ({c, key, func: c[key]})))
+                Object.keys(c)
+                .concat(Object.keys(Object.getPrototypeOf(c)))
+                .filter(key => (typeof c[key]) == 'function' && c[key].annotations && c[key].annotations.length > 0 && c[key].annotations[0].constructor.name.match(/get|post|put|patch|delete/i))
+                .map(key => ({
+                    c, key, func: c[key], anno: c[key].annotations[0]
+                }))
+            )
             .flatten()
             .map(({
-                c, key, func
+                c, key, func, anno
             }) => {
                 this.controllers.push(c)
                 var parms = {}
-                parms.path = func.annotation.url
-                parms.method = func.annotation.match(/get/i) ? 'GET' : func.annotation.match(/post/i) ? 'POST' : func.annotation.match(/put/i) ? 'PUT' : func.annotation.match(/patch/i) ? 'PATCH' : func.annotation.match(/delete/i) ? 'DELETE' : 'UNKNOWN'
-                parms.handler = func
-                if (func.annotation.name)
-                    parms.name = func.annotation.name
+                parms.path = anno.url
+                var annoType = anno.constructor.name
+                parms.method = annoType.match(/get/i) ? 'GET' : annoType.match(/post/i) ? 'POST' : annoType.match(/put/i) ? 'PUT' : annoType.match(/patch/i) ? 'PATCH' : annoType.match(/delete/i) ? 'DELETE' : 'UNKNOWN'
+                parms.handler = func.bind(c)
+                parms.name = anno.name
                 this.routes.push(parms)
-                console.log(parms)
                 return parms;
             })
             .each(this._register)
