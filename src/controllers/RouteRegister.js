@@ -5,9 +5,10 @@ var should = chai.should()
 
 export
 default class RouteRegister {
-    constructor(register) {
+    constructor(register, server) {
         should.exist(register)
         this._register = register || function () {}
+        this._server = server
     }
 
     get controllers() {
@@ -34,6 +35,8 @@ default class RouteRegister {
                 c, key, func, anno
             }) => {
                 this.controllers.push(c)
+                if (this._server)
+                    c.server = this._server
                 var parms = {}
                 var cAnnos = c.constructor.annotations
                 var baseUrl = cAnnos && cAnnos.length>0 && cAnnos[0].constructor.name.match(/get|post|put|patch|delete/i) ? (cAnnos[0].url||'') : ''
@@ -48,7 +51,7 @@ default class RouteRegister {
             .each(this._register)
     }
 
-    url(base, relative) {
+    url(base='', relative='') {
         var url = ('/' + base + '/' + relative).normalize('/')
         if (url != '/')
             url = url.trimEnd('/')
@@ -67,6 +70,6 @@ default class RouteRegister {
             if (parms.name)
                 route.config.id = parms.name
             server.route(route)
-        })
+        }, server)
     }
 }
