@@ -7,8 +7,6 @@ import Handlebars from 'handlebars';
 import config from '../config'
 import HandlebarsHelpers from './handlebars-helpers'
 
-console.log(config)
-
 // We want to register any app.-related helpers which can be called from associated views.
 new HandlebarsHelpers(Handlebars).register();
 
