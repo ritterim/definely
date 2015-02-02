@@ -8,8 +8,4 @@ export default class ApiController extends Controller {
         var siren = new Siren(entity, url)
         return siren.json
     }
-
-    url(relativeUrl = '') {
-        return this.server.info.uri.trimEnd('/') + ("/" + relativeUrl).normalize('/')
-    }
 }

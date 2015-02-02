@@ -13,7 +13,7 @@ export default class TermsController extends Controller {
     @Get()
     index(request, reply) {
         var searchTerm = request.url.query['search-term']
-        var url = this.absoluteUrl('api/terms?' + (searchTerm ? 'search-term=' + searchTerm : ''))
+        var url = this.url('api/terms?' + (searchTerm ? 'search-term=' + searchTerm : ''))
         http.getAsync(url).then(data => {
             var terms = super.siren(data[0].body)
             if (terms.length === 1)
@@ -43,7 +43,7 @@ export default class TermsController extends Controller {
 
     @Post('new')
     create(request, reply) {
-        var url = this.absoluteUrl('api/terms/new')
+        var url = this.url('api/terms/new')
         http.postAsync({
             url: url,
             form: request.payload
@@ -73,7 +73,7 @@ export default class TermsController extends Controller {
     }
 
     _show(id) {
-        var url = this.absoluteUrl('api/terms/' + id)
+        var url = this.url('api/terms/' + id)
         return http.getAsync(url).then(data => {
             var term = super.siren(data[0].body)
             term.tags = term.tags.join(' ')
@@ -92,7 +92,7 @@ export default class TermsController extends Controller {
     @Put('{id}')
     update(request, reply) {
         var id = request.params.id
-        var url = this.absoluteUrl('api/terms/' + id)
+        var url = this.url('api/terms/' + id)
         http
             .putAsync({
                 url: url,
