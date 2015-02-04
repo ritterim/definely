@@ -5,23 +5,15 @@ import Promise from 'bluebird'
 import _http from 'request'
 var http = Promise.promisifyAll(_http)
 import Lazy from 'lazy.js'
+import {Get, Post, Put, Patch, Delete} from '../attributes'
 
-export
-default class TermsController extends Controller {
-    constructor(router) {
-        super(router, '/terms');
+@Get('terms')
+export default class TermsController extends Controller {
 
-        this.get('/', this.index.bind(this));
-        this.get('/{id}', this.show.bind(this));
-        this.get('/{id}/edit', this.edit.bind(this));
-        this.get('/new', this.new);
-        this.post('/new', this.create.bind(this));
-        this.put('/{id}', this.update.bind(this));
-    }
-
+    @Get()
     index(request, reply) {
         var searchTerm = request.url.query['search-term']
-        var url = this.absoluteUrl('api/terms?' + (searchTerm ? 'search-term=' + searchTerm : ''))
+        var url = this.url('api/terms?' + (searchTerm ? 'search-term=' + searchTerm : ''))
         http.getAsync(url).then(data => {
             var terms = super.siren(data[0].body)
             if (terms.length === 1)
@@ -49,8 +41,9 @@ default class TermsController extends Controller {
         })
     }
 
+    @Post('new')
     create(request, reply) {
-        var url = this.absoluteUrl('api/terms/new')
+        var url = this.url('api/terms/new')
         http.postAsync({
             url: url,
             form: request.payload
@@ -60,6 +53,7 @@ default class TermsController extends Controller {
         })
     }
 
+    @Get('{id}/edit')
     edit(request, reply) {
         this._show(request.params.id).then(term => {
             reply.view('terms/edit', {
@@ -69,6 +63,7 @@ default class TermsController extends Controller {
         })
     }
 
+    @Get('{id}')
     show(request, reply) {
         this._show(request.params.id).then(term =>
             reply.view('terms/show', {
@@ -78,7 +73,7 @@ default class TermsController extends Controller {
     }
 
     _show(id) {
-        var url = this.absoluteUrl('api/terms/' + id)
+        var url = this.url('api/terms/' + id)
         return http.getAsync(url).then(data => {
             var term = super.siren(data[0].body)
             term.tags = term.tags.join(' ')
@@ -86,6 +81,7 @@ default class TermsController extends Controller {
         })
     }
 
+    @Get('new')
     new(request, reply) {
         reply.view('terms/new', {
             title: 'New term',
@@ -93,9 +89,10 @@ default class TermsController extends Controller {
         });
     }
 
+    @Put('{id}')
     update(request, reply) {
         var id = request.params.id
-        var url = this.absoluteUrl('api/terms/' + id)
+        var url = this.url('api/terms/' + id)
         http
             .putAsync({
                 url: url,
