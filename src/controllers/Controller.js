@@ -8,6 +8,7 @@ default class Controller {
     }
 
     url(relativeUrl = '') {
+        // this.server is set when routes are registered from child controllers in index.js using RouteRegister.
         return this.server.info.uri.trimEnd('/') + ("/" + relativeUrl).normalize('/')
     }
 }
