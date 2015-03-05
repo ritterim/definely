@@ -68,7 +68,8 @@ export default class TermsController extends Controller {
         this._show(request.params.id).then(term =>
             reply.view('terms/show', {
                 title: 'Show term',
-                term: term
+                term: term,
+                hostUri: this.server.info.uri.trimEnd('/')
             }))
     }
 
