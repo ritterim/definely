@@ -14,6 +14,7 @@ export default class HandlebarsHelpers {
         this.registerSanitizeHtml(this.handlebars);
         this.registerMarked(this.handlebars);
         this.registerAddEllipsis(this.handlebars);
+        this.registerSubstring(this.handlebars);
     }
 
     /**
@@ -63,6 +64,19 @@ export default class HandlebarsHelpers {
             }
 
             return input;
+        });
+    }
+
+    registerSubstring(handlebars) {
+        handlebars.registerHelper('substring', function(string, start, end, addEllipsis) {
+            var newString = string.substring(start, end);
+
+            // add ellipsis if length of string exceeds `end`-parameter and `addEllipsis` option is `true`.
+            if(string.length > end && addEllipsis) {
+                newString += '...';
+            }
+
+            return new handlebars.SafeString(newString);
         });
     }
 }

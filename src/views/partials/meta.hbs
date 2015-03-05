@@ -1,0 +1,8 @@
+{{#if term}}
+<meta property="og:title" content="What is `{{term.term}}`?" />
+<meta property="og:type" content="website" />
+{{#if hostUri}}
+<meta property="og:url" content="{{hostUri}}/terms/{{term.id}}" />
+{{/if}}
+<meta property="og:description" content="{{substring term.definition 0 100 true}}" />
+{{/if}}
